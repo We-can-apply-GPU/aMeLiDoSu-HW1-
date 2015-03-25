@@ -17,3 +17,8 @@ def sigmoid(x):
 
 sigmoidVec = np.vectorize(sigmoid)
 
+def sigmoidprime(x):
+    return (np.exp(-x) / (1.0 + np.exp(-x))** 2)
+
+sigmoidprimeVec = np.vectorize(sigmoidprime)
+
