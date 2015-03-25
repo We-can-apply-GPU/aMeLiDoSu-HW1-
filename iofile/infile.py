@@ -47,9 +47,9 @@ def miniBatch(size,dataset):
             batchs[-1].extend(dataset[0:compBatch])
     
     #test section
-    for i in range(len(batchs)):
-        #print(len(batchs))
-        print("batch{} : {}".format(i,batchs[i]))
+    #for i in range(len(batchs)):
+        ##print(len(batchs))
+        #print("batch{} : {}".format(i,batchs[i]))
     return batchs
 
 
