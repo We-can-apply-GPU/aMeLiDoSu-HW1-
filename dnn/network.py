@@ -5,7 +5,7 @@ File: network.py
 Description: define the whole dnn,and learning alg 
 """
 import numpy as np
-import layer
+from layer import *
 from util import *
 
 
@@ -14,25 +14,23 @@ class Network:
         self._numLayers = len(sizes)
         self._sizes = sizes
             
-        self._gradW= [np.zeros(j,i) \
-                    for (i,j)in zip(_sizes[:-1],[_sizes[1:]])]
-        self._gradB = [np.zeros(b,1)\
-                    for b in _sizes[1:]]
+        self._gradW = [np.zeros((j,i)) for (i, j) in zip(self._sizes[:-1],self._sizes[1:])]
+        self._gradB = [np.zeros((b,1))\
+                    for b in self._sizes[1:]]
         self._layers = []
         
-        for size in _sizes:
+        for size in self._sizes:
             layer = Layer(size)
             self._layers.append(layer)
 
         self._labels = [] # a phone list
-        for
 ######################
     def initialize(self,parsPath=""):
         if(parsPath ==""):
             self._weights = [np.random.randn(j,i)\
-                    for(i,j) in zip(_sizes[:-1],_sizes[1:])]
-            self._biases =[np)random.randn(b,1)\
-                    for b in _sizes[1:]]
+                    for(i,j) in zip(self._sizes[:-1], self._sizes[1:])]
+            self._biases =[np.random.randn(b,1)\
+                    for b in self._sizes[1:]]
         else:
             #self.loadModel(parsPath)
             pass
@@ -78,15 +76,15 @@ class Network:
         #outer(a,b) = a b^T
 ############I just think this maybe right@@################
         
-        _gradW[-1] += np.outer(delta,self._layers[-2]._a)
-        _gradB[-1] += delta  #delta * 1<-- partial z over b
+        self._gradW[-1] += np.outer(delta,self._layers[-2]._a)
+        self._gradB[-1] += delta  #delta * 1<-- partial z over b
         
         for l in range(2,self._numLayers):
             delta = activatePrime(self._layers[-l]._z)*  \
-            np.dot(np.transpose(self._weights[-l+1],delta)
+            np.dot(np.transpose(self._weights[-l+1],delta))
 ############As above ,I just think this maybe right@@#####
-            _gradW[-l]+=np.outer(delta,self._layers[-l-1]._a)
-            _gradB[-l]+= delta 
+            self._gradW[-l]+=np.outer(delta,self._layers[-l-1]._a)
+            self._gradB[-l]+= delta 
 
 ######################
     def update(self,eta):
