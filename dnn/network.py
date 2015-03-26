@@ -67,14 +67,13 @@ class Network:
         #and store gradient in _gradW and _gradB
        
         delta = activatePrime(self._layers[-1]._z)* \
-            errFuncPrime(self._layers[-1]._a,self._labels)
+            errorFuncPrime(self._layers[-1]._a,self._labels)
             #delta^{L}
         
         #delta is N_L   dim
         #   _a is N_{L-1} dim
         #the weight matrix is N_L x N_{L-1}
         #outer(a,b) = a b^T
-############I just think this maybe right@@################
         
         self._gradW[-1] += np.outer(delta,self._layers[-2]._a)
         self._gradB[-1] += delta  #delta * 1<-- partial z over b
@@ -82,7 +81,6 @@ class Network:
         for l in range(2,self._numLayers):
             delta = activatePrime(self._layers[-l]._z)*  \
             np.dot(np.transpose(self._weights[-l+1],delta))
-############As above ,I just think this maybe right@@#####
             self._gradW[-l]+=np.outer(delta,self._layers[-l-1]._a)
             self._gradB[-l]+= delta 
 
