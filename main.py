@@ -23,7 +23,10 @@ def main():
     for i in range(EPOCH_MAX):
         dataset = infile()
         batchs = miniBatch(BATCH_SIZE,dataset)
+
         for batch in batchs:
+            labels=[batch[i][1] for i in range(len(batch))]
+            dnn.setLabel(labels)
             dnn.train(batch)
 
     #predicting

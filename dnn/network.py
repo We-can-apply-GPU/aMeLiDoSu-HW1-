@@ -15,24 +15,29 @@ class Network:
         self._sizes = sizes
             
         self._gradW= [np.zeros(j,i) \
-                    for (i,j) in zip(sizes[:-1],[sizes[1:]])]
+                    for (i,j)in zip(_sizes[:-1],[_sizes[1:]])]
         self._gradB = [np.zeros(b,1)\
-                    for b in sizes[1:]]
+                    for b in _sizes[1:]]
         self._layers = []
-
-        for size in sizes:
+        
+        for size in _sizes:
             layer = Layer(size)
             self._layers.append(layer)
+
+        self._labels = [] # a phone list
+        for
 ######################
     def initialize(self,parsPath=""):
         if(parsPath ==""):
             self._weights = [np.random.randn(j,i)\
-                    for(i,j) in zip(sizes[:-1],sizes[1:])]
-            self._biases =[np.random.randn(b,1)\
-                    for b in sizes[1:]]
+                    for(i,j) in zip(_sizes[:-1],_sizes[1:])]
+            self._biases =[np)random.randn(b,1)\
+                    for b in _sizes[1:]]
         else:
             #self.loadModel(parsPath)
             pass
+    def setLabel(labels):
+        self._labels.extend(labels)
 ######################
     def train(self,batch):
         for data in batch:
@@ -47,34 +52,47 @@ class Network:
 
         #inData must be a np.array
         self._layers[0]._z = inData
+
         for b,w,z,a in zip(self._biases,self._weights,
                          self._layers[1:],self._layers[:-1]):
             z = activate(np.dot(w,a) + b)
-            #dot can used on matrix product
-            #the last layer input z is the output of dnn
-        return (z[-1]/np.linalg.norm(z[-1]))#normalize it!
+        
+        self._layers[-1]._a = activate(self._layers[-1]._z)
+        #dot can used on matrix product
+        return self._layers[-1]._a
 #############################
 
     def backpro(self):
-        deltaW[-1] = 2 * \
-            np.dot(sigmoidprime(self._layers[-1]._z))
+        #This function will use backpropograte
+        #to calculate partial C^r over partial layer input
+        #then , multiplicate layer output with it ->gradient
+        #and store gradient in _gradW and _gradB
+       
+        delta = activatePrime(self._layers[-1]._z)* \
+                errFuncPrime(self._layers[-1]._a) #delta^{L}
+        
+        #delta is N_L   dim
+        #   _a is N_{L-1} dim
+        #the weight matrix is N_L x N_{L-1}
+        #outer(a,b) = a b^T
+############I just think this maybe right@@################
+        
+        _gradW[-1] = np.outer(delta,self._layers[-2]._a)
+        _gradB[-1] = delta  #delta * 1<-- partial z over b
+        
+        for l in range(2,self._numLayers):
+            delta = activatePrime(self._layers[-l]._z)*  \
+            np.dot(np.transpose(self._weights[-l+1],delta)
+############As above ,I just think this maybe right@@#####
+            _gradW[-l]=np.outer(delta,self._layers[-l-1]._a)
+            _gradB[-l] = delta 
 
-        for l in xrange(2,self._numLayers-1):
-            self._gradW[-l] = np.dot\
-                    (sigmoidprime(self._layers[-l]._z),\
-                    np.dot(np.transpose(self.weights[-l+1]),\
-                           deltaW[-l+1]))              
-            self._gradB[-l] = np.dot\
-                    (sigmoidprime(self._layers[-l]._z),\
-                    np.dot(np.transpose(self.weights[-l+1]),\
-                        deltaB[-l+1]))              
 ######################
-
     def update(self,eta):
         for w,b,i in zip(self._weights,self._biases,
-                xrange(len(self._numLayers)-1)):
-            w = np.subtract(w,gradW[i]* eta)
-            b = np.subtract(b,gradB[i]* eta)
+                range(len(self._numLayers)-1)):
+            w = np.subtract(w,_gradW[i]* eta)
+            b = np.subtract(b,_gradB[i]* eta)
 
 
     def predict(self,inData):
@@ -84,8 +102,8 @@ class Network:
         pass
 
 
-    def loadModel(self):
+    def loadModel(self,parsPath=""):
         pass
 
-    def saveModel(self):
+    def saveModel(self,savePath=""):
         pass
