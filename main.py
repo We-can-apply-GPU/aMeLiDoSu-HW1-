@@ -7,13 +7,12 @@ Description:
 
 #import section
 from dnn import *
-from util import *
 from iofile import *
 
 #Predefined const
 sizes = [39,128,48]
 EPOCH_MAX = 100
-BATCH_SIZE
+BATCH_SIZE = 50
 
 def main():
     dnn = network(sizes)
@@ -28,8 +27,14 @@ def main():
             labels=[batch[i][1] for i in range(len(batch))]
             dnn.setLabel(labels)
             dnn.train(batch)
+        #dnn.reportErrorrate()
+    #dnn.saveModel("")
+
 
     #predicting
+    #dnn.predict("")
+
+
 
 if __name__ == "main":
     main()
