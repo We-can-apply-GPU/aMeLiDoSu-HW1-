@@ -10,7 +10,7 @@ from DNN.network import *
 from DNN.iofile import *
 
 #Predefined const
-sizes = [39,128,48]
+sizes = [39,48]
 EPOCH_MAX = 100
 BATCH_SIZE = 50
 

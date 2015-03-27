@@ -5,12 +5,14 @@ File: network.py
 Description: define the whole dnn,and learning alg 
 """
 import numpy as np
-from util.calculation import *
+from .calculation import *
+from .errorFunc import *
+#from util.calculation import *
 
 class Layer:
     def __init__(self,numNeurons):
-        self._z = np.zeros(numNeurons)
-        self._a = np.zeros(numNeurons)
+        self._z = np.zeros((numNeurons,1))
+        self._a = np.zeros((numNeurons,1))
 
 class Network:
     def __init__(self,sizes):
@@ -41,7 +43,7 @@ class Network:
 ######################
     def train(self,batch):
         for data in batch:
-            self.forward(data)
+            self.forward(data[0])
             #dnn.errorFunc()
             self.backpro() #update gradW and gradB
         self.update()
@@ -53,10 +55,10 @@ class Network:
         #inData must be a np.array
         self._layers[0]._z = inData
 
-        for b,w,z,a in zip(self._biases,self._weights,
-                         self._layers[1:],self._layers[:-1]):
-            z = activate(np.dot(w,a) + b)
-        
+        for b,w,i in zip(self._biases,self._weights, \
+                         range(len(self._biases))):
+            self._layers[i]._a = self.activate(self._layers[i]._z)
+            self._layers[i+1]._z = np.dot(w,self._layers[i]._a)+b
         self._layers[-1]._a = activate(self._layers[-1]._z)
         #dot can used on matrix product
         return self._layers[-1]._a
@@ -68,8 +70,9 @@ class Network:
         #then , multiplicate layer output with it ->gradient
         #and store gradient in _gradW and _gradB
        
-        delta = activatePrime(self._layers[-1]._z)* \
-            errorFuncPrime(self._layers[-1]._a,self._labels)
+        delta = self.activatePrime(self._layers[-1]._z)* \
+            errFuncPrime(self._layers[-1]._a,self._labels)
+        print("delta is {}".format(delta))
         #delta^{L}
         
         #delta is N_L   dim
@@ -127,15 +130,11 @@ class Network:
         f.write("\n")
         f.close()
 
-    def activate(self,x):
-       sigmoidVec(x)
-    
+#different activate functions
+
+    def activate(self,x):  #x is a vector
+        return sigmoidVec(x)
+
     def activatePrime(self,x):
-        activatePrimeVec(x)
-
-    def errorFunc(self,x):
-        errorFuncVec(x)
+        return sigmoidPrimeVec(x)
     
-    def errorFuncPrime(self,x):
-        errorFuncPrimeVec(x)
-

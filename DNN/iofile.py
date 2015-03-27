@@ -9,7 +9,6 @@ import random
 from math import ceil
 
 def infile(ark, lab):
-    print(ark, lab)
     dic = {}
     dataset=[]
 
@@ -48,13 +47,13 @@ def miniBatch(size,dataset):
             batchs[-1].extend(dataset[0:compBatch])
     
     #test section
-    for i in range(len(batchs)):
+    #for i in range(len(batchs)):
         ##print(len(batchs))
-        print("batch{} : {}".format(i,batchs[i]))
     for batch in batchs:
         labels=[batch[i][1] for i in range(len(batch))]
-        for label in labels:
-            print("{}".format(label))
+        print(batch)
+        #for label in labels:
+            #print("{}".format(label))
     return batchs
 
 if __name__ == "__main__":
