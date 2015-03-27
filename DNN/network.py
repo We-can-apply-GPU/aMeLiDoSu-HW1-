@@ -5,6 +5,7 @@ File: network.py
 Description: define the whole dnn,and learning alg 
 """
 import numpy as np
+from util.calculation import *
 
 class Layer:
     def __init__(self,numNeurons):
@@ -40,10 +41,10 @@ class Network:
 ######################
     def train(self,batch):
         for data in batch:
-            dnn.forward(data)
+            self.forward(data)
             #dnn.errorFunc()
-            dnn.backpro() #update gradW and gradB
-        dnn.update()
+            self.backpro() #update gradW and gradB
+        self.update()
 ###################
     def forward(self,inData):
         #z is input  vector of neuron layer
