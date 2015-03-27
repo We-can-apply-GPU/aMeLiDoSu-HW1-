@@ -15,8 +15,7 @@ class Network:
         self._sizes = sizes
             
         self._gradW = [np.zeros((j,i)) for (i, j) in zip(self._sizes[:-1],self._sizes[1:])]
-        self._gradB = [np.zeros((b,1))\
-                    for b in self._sizes[1:]]
+        self._gradB = [np.zeros((b,1)) for b in self._sizes[1:]]
         self._layers = []
         
         for size in self._sizes:
@@ -29,7 +28,7 @@ class Network:
         if(parsPath ==""):
             self._weights = [np.random.randn(j,i)\
                     for(i,j) in zip(self._sizes[:-1], self._sizes[1:])]
-            self._biases =[np.random.randn(b,1)\
+            self._biases =[np.zeros((b,1))\
                     for b in self._sizes[1:]]
         else:
             #self.loadModel(parsPath)
@@ -67,15 +66,13 @@ class Network:
         #and store gradient in _gradW and _gradB
        
         delta = activatePrime(self._layers[-1]._z)* \
-            errFuncPrime(self._layers[-1]._a,self._labels)
-
-            #delta^{L}
+            errorFuncPrime(self._layers[-1]._a,self._labels)
+        #delta^{L}
         
         #delta is N_L   dim
         #   _a is N_{L-1} dim
         #the weight matrix is N_L x N_{L-1}
         #outer(a,b) = a b^T
-############I just think this maybe right@@################
         
         self._gradW[-1] += np.outer(delta,self._layers[-2]._a)
         self._gradB[-1] += delta  #delta * 1<-- partial z over b
@@ -83,7 +80,6 @@ class Network:
         for l in range(2,self._numLayers):
             delta = activatePrime(self._layers[-l]._z)*  \
             np.dot(np.transpose(self._weights[-l+1],delta))
-############As above ,I just think this maybe right@@#####
             self._gradW[-l]+=np.outer(delta,self._layers[-l-1]._a)
             self._gradB[-l]+= delta 
 
@@ -93,6 +89,8 @@ class Network:
                 range(len(self._numLayers)-1)):
             w = np.subtract(w,_gradW[i]* eta / len(batch))
             b = np.subtract(b,_gradB[i]* eta / len(batch))
+            _gradW[i] = np.zeros(_gradW.shape)
+            _gradB[i] = np.zeros(_gradB.shape)
 
 
     def predict(self,inData):

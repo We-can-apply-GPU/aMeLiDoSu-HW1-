@@ -24,7 +24,7 @@ def main():
         batchs = miniBatch(BATCH_SIZE,dataset)
 
         for batch in batchs:
-            labels=[batch[i][1] for i in range(len(batch))]
+            labels=[batch[i][1] for i in BATCH_SIZE]
             dnn.setLabel(labels)
             dnn.train(batch)
         #dnn.reportErrorrate()
