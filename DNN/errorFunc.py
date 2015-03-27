@@ -14,7 +14,7 @@ def errFuncPrime(ls,lb):
     r = np.asarray(r)
     mapdic = {}
     idx = 0
-    m = open("48_39.map")
+    m = open("DNN/48_39.map")
     for s in m:
         tmp = s.rstrip().split("\t")
         mapdic[tmp[0]] = idx
