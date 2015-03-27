@@ -29,7 +29,7 @@ class Network:
         if(parsPath ==""):
             self._weights = [np.random.randn(j,i)\
                     for(i,j) in zip(self._sizes[:-1], self._sizes[1:])]
-            self._biases =[np.random.randn(b,1)\
+            self._biases =[np.zeros((b,1))\
                     for b in self._sizes[1:]]
         else:
             #self.loadModel(parsPath)
@@ -90,6 +90,8 @@ class Network:
                 range(len(self._numLayers)-1)):
             w = np.subtract(w,_gradW[i]* eta / len(batch))
             b = np.subtract(b,_gradB[i]* eta / len(batch))
+            _gradW[i] = np.zeros(_gradW.shape)
+            _gradB[i] = np.zeros(_gradB.shape)
 
 
     def predict(self,inData):
