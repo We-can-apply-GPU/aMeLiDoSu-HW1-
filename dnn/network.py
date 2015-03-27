@@ -101,18 +101,28 @@ class Network:
 
 
     def loadModel(self,parsPath):
-        pass
+        f = open(parsPath, "r")
+        import json
+        self._sizes = json.loads(f.readline())
+        self._gradW = []
+        self._gradB = []
+        for tmp in json.loads(f.readline()):
+            self._gradW.append(np.asarray(tmp))
+        for tmp in json.loads(f.readline()):
+            self._gradB.append(np.asarray(tmp))
 
 
     def saveModel(self, savePath):
         f = open(savePath, "w")
+
         import json
-
         f.write(json.dumps(self._sizes))
-
-        for (i, j) in zip(self._sizes[:-1] ,self._sizes[1:]):
-            print(self._gradW[j][i])
-
+        f.write("\n")
+        f.write(json.dumps([tmp.tolist() for tmp in self._gradW]))
+        f.write("\n")
+        f.write(json.dumps([tmp.tolist() for tmp in self._gradB]))
+        f.write("\n")
+        f.close()
 
     def activate(self,x):
        sigmoidVec(x)
