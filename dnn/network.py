@@ -5,8 +5,9 @@ File: network.py
 Description: define the whole dnn,and learning alg 
 """
 import numpy as np
-from layer import *
-from util import *
+#from layer import *
+from util.calculation import *
+from util.errorFunc import *
 
 
 class Network:
