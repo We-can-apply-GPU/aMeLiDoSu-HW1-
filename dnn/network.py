@@ -68,6 +68,7 @@ class Network:
        
         delta = activatePrime(self._layers[-1]._z)* \
             errFuncPrime(self._layers[-1]._a,self._labels)
+
             #delta^{L}
         
         #delta is N_L   dim
@@ -101,11 +102,19 @@ class Network:
         pass
 
 
-    def loadModel(self,parsPath=""):
+    def loadModel(self,parsPath):
         pass
 
-    def saveModel(self,savePath=""):
-        pass
+
+    def saveModel(self, savePath):
+        f = open(savePath, "w")
+        import json
+
+        f.write(json.dumps(self._sizes))
+
+        for (i, j) in zip(self._sizes[:-1] ,self._sizes[1:]):
+            print(self._gradW[j][i])
+
 
     def activate(self,x):
        sigmoidVec(x)
