@@ -10,9 +10,9 @@ import os
 def errFunc(ls):
     return errSquare(ls)
 def errFuncPrime(ls,lb):
-    r = []
+    r = [0]*48
+    r = np.asarray(r)
     mapdic = {}
-    newls = []
     idx = 0
     m = open("48_39.map")
     for s in m:
@@ -22,8 +22,8 @@ def errFuncPrime(ls,lb):
     for i,j in zip(ls,lb):
         zv = [0]*48
         zv[mapdic[j]] = 1
-        r.append(2*(np.asarray(i)-np.asarray(zv))/ls.__len__())
-    return np.asarray(r)
+        r += (2*(np.asarray(i)-np.asarray(zv)))
+        return r/ls.__len__()
 def errSquare(ls):
     r = 0.0
     for i in ls:
