@@ -6,22 +6,26 @@ Description: evaluate the cost function
 """
 import numpy as np
 # write in the Network class??
-def errFunc(ls):
-    return errSquare(ls)
-def errSquare(ls):
-    r = 0.0
+def errFunc(ls,lb):
+    return errSquare(ls,lb)
+def errSquare(ls,lb):
+    r = []
     mapdic = {}
     newls = []
+    idx = 0
     m = open("48_39.map")
     for s in m:
         tmp = s.rstrip().split("\t")
-        mapdic[tmp[0]]=tmp[1]
-    for i in ls:
-        newls.append((mapdic[i[0]],i[1]))
-    for i in newls:
-        r += np.sum((np.asarray(i[0])-np.asarray(i[1]))**2)
-    return r/ls.__len__()
-
+        mapdic[tmp[0]] = idx
+        idx += 1
+    for i,j in zip(ls,lb):
+        zv = [0]*48
+        zv[mapdic[j]] = 1
+        r.append(2*(np.asarray(i)-np.asarray(zv))/ls.__len__())
+    return r
+#x = [0]*48
+#x[2]=1
+print(errFunc([x],["aa"]))
 #The errorFunc will receive one argument, a list,
 #and compare it with the valuse set in labels(need mapping)
 #errorFuncPrime will,too

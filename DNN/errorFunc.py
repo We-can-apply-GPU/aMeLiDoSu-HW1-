@@ -9,11 +9,21 @@ import os
 # write in the Network class??
 def errFunc(ls):
     return errSquare(ls)
-def errFuncPrime(ls):
+def errFuncPrime(ls,lb):
     r = []
-    for i in ls:
-        r.append(2*np.sum(i[0]-i[1]))
-    return np.asarray(r/ls.__len__())
+    mapdic = {}
+    newls = []
+    idx = 0
+    m = open("48_39.map")
+    for s in m:
+        tmp = s.rstrip().split("\t")
+        mapdic[tmp[0]] = idx
+        idx += 1
+    for i,j in zip(ls,lb):
+        zv = [0]*48
+        zv[mapdic[j]] = 1
+        r.append(2*(np.asarray(i)-np.asarray(zv))/ls.__len__())
+    return np.asarray(r)
 def errSquare(ls):
     r = 0.0
     for i in ls:
