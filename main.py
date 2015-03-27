@@ -6,7 +6,7 @@ Description:
 """
 
 #import section
-from DNN.Network.network import *
+from DNN.network import *
 from DNN.iofile import *
 
 #Predefined const
