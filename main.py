@@ -6,8 +6,8 @@ Description:
 """
 
 #import section
-from dnn import *
-from iofile import *
+from dnn.network import *
+from iofile.infile import *
 
 #Predefined const
 sizes = [39,128,48]
@@ -36,5 +36,4 @@ def main():
 
 
 
-if __name__ == "main":
-    main()
+main()
