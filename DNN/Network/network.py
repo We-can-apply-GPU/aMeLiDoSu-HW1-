@@ -5,9 +5,11 @@ File: network.py
 Description: define the whole dnn,and learning alg 
 """
 import numpy as np
-from layer import *
-from util import *
 
+class Layer:
+    def __init__(self,numNeurons):
+        self._z = np.zeros(numNeurons)
+        self._a = np.zeros(numNeurons)
 
 class Network:
     def __init__(self,sizes):

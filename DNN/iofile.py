@@ -8,7 +8,8 @@ import numpy as np
 import random
 from math import ceil
 
-def infile(ark = "../mfcc/trainToy.ark", lab = "../label/trainToy.lab"):
+def infile(ark, lab):
+    print(ark, lab)
     dic = {}
     dataset=[]
 
@@ -56,7 +57,6 @@ def miniBatch(size,dataset):
             print("{}".format(label))
     return batchs
 
-
-#test section
-dataset = infile()
-miniBatch(2,dataset)
+if __name__ == "__main__":
+    dataset = infile()
+    miniBatch(2, dataset)
