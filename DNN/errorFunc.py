@@ -65,10 +65,12 @@ def f48t39_1(vec):
         mapdic[tmp[0]]=tmp[1]
         ls48.append(tmp[0]) 
     return mapdic[ls48[np.argmax(vec)]]
-arr = [0]*48
-arr[45] = 100
-arr = np.asarray(arr)
-print(f48t39_2(arr))
+if __name__== "__main__":
+    b = a = [0]*48
+    a[5]=1
+    a[1]=1
+    print(errFuncPrime([a,b],["aa","aa"]))
+
 #The errorFunc will receive one argument, a list,
 #and compare it with the valuse set in labels(need mapping)
 #errorFuncPrime will,too
