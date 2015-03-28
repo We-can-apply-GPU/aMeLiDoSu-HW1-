@@ -51,7 +51,6 @@ def miniBatch(size,dataset):
         ##print(len(batchs))
     for batch in batchs:
         labels=[batch[i][1] for i in range(len(batch))]
-        print(batch)
         #for label in labels:
             #print("{}".format(label))
     return batchs

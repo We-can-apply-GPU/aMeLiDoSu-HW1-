@@ -20,7 +20,7 @@ class Network:
         self._sizes = sizes
             
         self._gradW = [np.zeros((j,i)) for (i, j) in zip(self._sizes[:-1],self._sizes[1:])]
-        self._gradB = [np.zeros((b,1)) for b in self._sizes[1:]]
+        self._gradB = [np.zeros(b) for b in self._sizes[1:]]
         self._layers = []
         
         for size in self._sizes:
@@ -33,8 +33,8 @@ class Network:
         if(parsPath ==""):
             self._weights = [np.random.randn(j,i)\
                     for(i,j) in zip(self._sizes[:-1], self._sizes[1:])]
-            self._biases =[np.zeros((b,1))\
-                    for b in self._sizes[1:]]
+            self._biases =[np.zeros(b) for b in self._sizes[1:]]
+
         else:
             #self.loadModel(parsPath)
             pass
@@ -46,22 +46,22 @@ class Network:
             self.forward(data[0])
             #dnn.errorFunc()
             self.backpro() #update gradW and gradB
-        self.update()
+        self.update(0.01,batch.__len__())
 ###################
     def forward(self,inData):
         #z is input  vector of neuron layer
         #a is output vector of neuron layer,a=activate(z)
 
         #inData must be a np.array
-        self._layers[0]._z = inData
+        self._layers[0]._z = inData #not necessary
+        self._layers[0]._a = inData
 
         for b,w,i in zip(self._biases,self._weights, \
                          range(len(self._biases))):
-            self._layers[i]._a = self.activate(self._layers[i]._z)
             self._layers[i+1]._z = np.dot(w,self._layers[i]._a)+b
-        self._layers[-1]._a = activate(self._layers[-1]._z)
+            self._layers[i+1]._a = self.activate(self._layers[i+1]._z)
         #dot can used on matrix product
-        return self._layers[-1]._a
+        #return self._layers[-1]._a
 #############################
 
     def backpro(self):
@@ -70,9 +70,10 @@ class Network:
         #then , multiplicate layer output with it ->gradient
         #and store gradient in _gradW and _gradB
        
-        delta = self.activatePrime(self._layers[-1]._z)* \
-            errFuncPrime(self._layers[-1]._a,self._labels)
-        print("delta is {}".format(delta))
+        aPl = self.activatePrime(self._layers[-1]._z)
+        CrP = errFuncPrime(self._layers[-1]._a,self._labels)
+        delta = aPl* CrP 
+        #print("delta is {}".format(delta))
         #delta^{L}
         
         #delta is N_L   dim
@@ -90,13 +91,14 @@ class Network:
             self._gradB[-l]+= delta 
 
 ######################
-    def update(self,eta):
+    def update(self,eta,batch_len):
         for w,b,i in zip(self._weights,self._biases,
-                range(len(self._numLayers)-1)):
-            w = np.subtract(w,_gradW[i]* eta / len(batch))
-            b = np.subtract(b,_gradB[i]* eta / len(batch))
-            _gradW[i] = np.zeros(_gradW.shape)
-            _gradB[i] = np.zeros(_gradB.shape)
+                range(len(self._layers)-1)):
+            w = np.subtract(w,self._gradW[i]* eta / batch_len)
+            b = np.subtract(b,self._gradB[i]* eta / batch_len)
+            self._gradW[i] = np.zeros(self._gradW[i].shape) 
+            self._gradB[i] = np.zeros(self._gradB[i].__len__()) 
+            
 
 
     def predict(self,inData):

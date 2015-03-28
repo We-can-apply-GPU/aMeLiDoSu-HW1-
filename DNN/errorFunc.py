@@ -14,17 +14,15 @@ def errFuncPrime(ls,lb):
     r = np.asarray(r)
     mapdic = {}
     idx = 0
-    m = open("48_39.map")
+    m = open("data/phones/48_39.map")
     for s in m:
         tmp = s.rstrip().split("\t")
         mapdic[tmp[0]] = idx
         idx += 1
-    for i,j in zip(ls,lb):
-        zv = [0]*48
-        zv[mapdic[j]] = 1
-        print(i,zv)
-        r += (2*(np.asarray(i)-np.asarray(zv)))
-    return r/ls.__len__()
+    zv = [0]*48
+    zv[mapdic[lb[0]]] = 1
+    r += (2*(np.asarray(ls)-np.asarray(zv)))
+    return r # maybe need to be divided by length
 def errSquare(ls):
     r = 0.0
     for i in ls:
