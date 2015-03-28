@@ -8,7 +8,7 @@ Description: use GPU acceleration method to do some calculation
 import numpy as np
 
 def activate(x):  #x is a vector
-    sigmoidVec(x)
+    return sigmoidVec(x)
 
 #different activate functions
 def sigmoid(x):
