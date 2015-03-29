@@ -126,9 +126,9 @@ class Network:
         import json
         f.write(json.dumps(self._sizes))
         f.write("\n")
-        f.write(json.dumps([tmp.tolist() for tmp in self._gradW]))
+        f.write(json.dumps([tmp.tolist() for tmp in self._weights]))
         f.write("\n")
-        f.write(json.dumps([tmp.tolist() for tmp in self._gradB]))
+        f.write(json.dumps([tmp.tolist() for tmp in self._biases]))
         f.write("\n")
         f.close()
 
