@@ -8,7 +8,7 @@ import numpy as np
 from .calculation import *
 from .errorFunc import *
 #from util.calculation import *
-
+import theano.tensor as T
 class Layer:
     def __init__(self,numNeurons):
         self._z = np.zeros((numNeurons,1))
@@ -59,7 +59,7 @@ class Network:
 
         for b,w,i in zip(self._biases,self._weights, \
                          range(len(self._biases))):
-            self._layers[i+1]._z = np.dot(w,self._layers[i]._a)+b
+            self._layers[i+1]._z = TMVdot(w,self._layers[i]._a)+b
             self._layers[i+1]._a = self.activate(self._layers[i+1]._z)
         #dot can used on matrix product
         return self._layers[-1]._a
@@ -81,13 +81,13 @@ class Network:
         #the weight matrix is N_L x N_{L-1}
         #outer(a,b) = a b^T
         
-        self._gradW[-1] += np.outer(delta,self._layers[-2]._a)
+        self._gradW[-1] += Touter(delta,self._layers[-2]._a)
         self._gradB[-1] += delta  #delta * 1<-- partial z over b
         
         for l in range(2,self._numLayers):
             delta = self.activatePrime(self._layers[-l]._z)*  \
-            np.dot(np.transpose(self._weights[-l+1]),delta)
-            self._gradW[-l]+=np.outer(delta,self._layers[-l-1]._a)
+            TMVdot(np.transpose(self._weights[-l+1]),delta)
+            self._gradW[-l]+=Touter(delta,self._layers[-l-1]._a)
             self._gradB[-l]+= delta 
 
 ######################
