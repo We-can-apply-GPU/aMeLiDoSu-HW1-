@@ -23,8 +23,6 @@ def main():
         dataset = infile("data/mfcc/trainToy.ark", "data/label/trainToy.lab")
         batchs = miniBatch(BATCH_SIZE, dataset)
 
-        print(len(batchs))
-
         #print(len(batchs))
         for batch in batchs:
             labels=[batch[i][1] for i in range(BATCH_SIZE)]
