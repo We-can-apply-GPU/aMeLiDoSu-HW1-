@@ -36,8 +36,7 @@ class Network:
             self._biases =[np.zeros(b) for b in self._sizes[1:]]
 
         else:
-            #self.loadModel(parsPath)
-            pass
+            self.loadModel(parsPath)
     def setLabel(self,labels):
         self._labels.extend(labels)
 ######################
@@ -54,7 +53,7 @@ class Network:
         #a is output vector of neuron layer,a=activate(z)
 
         #inData must be a np.array
-        self._layers[0]._z = inData #not necessary
+        #self._layers[0]._z = inData #not necessary
         self._layers[0]._a = inData
 
         for b,w,i in zip(self._biases,self._weights, \
@@ -62,7 +61,7 @@ class Network:
             self._layers[i+1]._z = np.dot(w,self._layers[i]._a)+b
             self._layers[i+1]._a = self.activate(self._layers[i+1]._z)
         #dot can used on matrix product
-        #return self._layers[-1]._a
+        return self._layers[-1]._a
 #############################
 
     def backpro(self,dataId):
@@ -72,10 +71,8 @@ class Network:
         #and store gradient in _gradW and _gradB
        
         aPl = self.activatePrime(self._layers[-1]._z)
-        #print(dataId)
         CrP = errFuncPrime(self._layers[-1]._a,self._labels[dataId])
         delta = aPl* CrP 
-        #print("delta is {}".format(delta))
         #delta^{L}
         
         #delta is N_L   dim

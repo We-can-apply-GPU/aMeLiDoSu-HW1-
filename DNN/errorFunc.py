@@ -6,7 +6,6 @@ Description: evaluate the cost function
 """
 import numpy as np
 import os
-# write in the Network class??
 def errFunc(ls):
     return errSquare(ls)
 def errFuncPrime(ls,lb):
@@ -32,8 +31,6 @@ def errSquare(ls):
 #not completed
 def f48t39_2(vec):
    ### 
-    #print("hhi")
-    #print("{}".format(os.getcwd()))
     m = open("data/phones/48_39.map")
     mapdic = {}
     iter39 = {}
