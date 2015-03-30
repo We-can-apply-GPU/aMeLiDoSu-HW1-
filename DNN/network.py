@@ -84,8 +84,8 @@ class Network:
         self._gradB[-1] += delta  #delta * 1<-- partial z over b
         
         for l in range(2,self._numLayers):
-            delta = activatePrime(self._layers[-l]._z)*  \
-            np.dot(np.transpose(self._weights[-l+1],delta))
+            delta = self.activatePrime(self._layers[-l]._z)*  \
+            np.dot(np.transpose(self._weights[-l+1]),delta)
             self._gradW[-l]+=np.outer(delta,self._layers[-l-1]._a)
             self._gradB[-l]+= delta 
 
