@@ -42,10 +42,11 @@ class Network:
         self._labels.extend(labels)
 ######################
     def train(self,batch):
-        for data in batch:
+        #print(len(batch))
+        for data , dataId in zip (batch,(range(len(batch)))):
             self.forward(data[0])
             #dnn.errorFunc()
-            self.backpro() #update gradW and gradB
+            self.backpro(dataId) #update gradW and gradB
         self.update(0.01,batch.__len__())
 ###################
     def forward(self,inData):
@@ -64,14 +65,15 @@ class Network:
         #return self._layers[-1]._a
 #############################
 
-    def backpro(self):
+    def backpro(self,dataId):
         #This function will use backpropograte
         #to calculate partial C^r over partial layer input
         #then , multiplicate layer output with it ->gradient
         #and store gradient in _gradW and _gradB
        
         aPl = self.activatePrime(self._layers[-1]._z)
-        CrP = errFuncPrime(self._layers[-1]._a,self._labels)
+        #print(dataId)
+        CrP = errFuncPrime(self._layers[-1]._a,self._labels[dataId])
         delta = aPl* CrP 
         #print("delta is {}".format(delta))
         #delta^{L}
