@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import random
 from math import ceil
 
