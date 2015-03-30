@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/ev python
 # -*- coding: utf-8 -*-
 """
 File: main.py
@@ -12,7 +12,7 @@ from DNN.iofile import *
 #Predefined const
 sizes = [39,48]
 EPOCH_MAX = 100
-BATCH_SIZE = 50
+BATCH_SIZE = 10
 
 def main():
     dnn = Network(sizes)
@@ -23,6 +23,7 @@ def main():
         dataset = infile("data/mfcc/trainToy.ark", "data/label/trainToy.lab")
         batchs = miniBatch(BATCH_SIZE,dataset)
 
+        #print(len(batchs))
         for batch in batchs:
             labels=[batch[i][1] for i in range(BATCH_SIZE)]
             dnn.setLabel(labels)
