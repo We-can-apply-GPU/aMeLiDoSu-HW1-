@@ -29,7 +29,8 @@ def main():
             dnn.setLabel(labels)
             dnn.train(batch)
         #dnn.reportErrorrate()
-    #dnn.saveModel("")
+    import time
+    dnn.saveModel("model/" + str(time.time()) + ".txt")
 
 
     #predicting
