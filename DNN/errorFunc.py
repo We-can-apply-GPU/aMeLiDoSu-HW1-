@@ -56,7 +56,7 @@ def f48t39_2(vec):
     return -1#ls39[np.argmax(vec)]
 
 def f48t39_1(vec):
-    m = open("../../phones/48_39.map")
+    m = open("data/phones/48_39.map")
     mapdic = {}
     ls48 = []
     for s in m:

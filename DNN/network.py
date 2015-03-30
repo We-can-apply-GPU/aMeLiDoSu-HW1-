@@ -62,7 +62,7 @@ class Network:
             self._layers[i+1]._z = np.dot(w,self._layers[i]._a)+b
             self._layers[i+1]._a = self.activate(self._layers[i+1]._z)
         #dot can used on matrix product
-        #return self._layers[-1]._a
+        return self._layers[-1]._a #for predict
 #############################
 
     def backpro(self,dataId):
@@ -105,11 +105,9 @@ class Network:
 
     def predict(self,inData):
         conseq = self.forward(inData)
-
+        return f48t39_1(conseq) 
         #Mapping to 39 phome
-        pass
-
-
+        
     def loadModel(self,parsPath):
         f = open(parsPath, "r")
         import json
@@ -141,4 +139,3 @@ class Network:
 
     def activatePrime(self,x):
         return sigmoidPrimeVec(x)
-    
