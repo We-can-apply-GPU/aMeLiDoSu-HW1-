@@ -1,5 +1,6 @@
 data
 model
+output
 __pycache__/
 *.pyc
 *.swp

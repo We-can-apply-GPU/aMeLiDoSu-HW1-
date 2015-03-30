@@ -8,10 +8,20 @@ import numpy as np
 import random
 from math import ceil
 
-def infile(ark, lab):
-    dic = {}
-    dataset=[]
+def arkIn(ark):
+    ans = []
+    data = open(ark)
+    for line in data:
+        s = line.rstrip().split(" ")
+        for i in range(1, len(s)):
+            s[i] = float(s[i])
+        ans.append(s)
+    data.close()
+    return ans 
 
+def infile(ark, lab):
+    dataset=[]
+    dic = {}
     data = open(ark)
     labl = open(lab)
     for line in data:

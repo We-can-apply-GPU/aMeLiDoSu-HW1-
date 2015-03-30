@@ -15,35 +15,33 @@ class Layer:
         self._a = np.zeros((numNeurons,1))
 
 class Network:
-    def __init__(self,sizes):
-        self._numLayers = len(sizes)
+
+    def initialize(self, parsPath = "", sizes = []):
         self._sizes = sizes
-            
-        self._gradW = [np.zeros((j,i)) for (i, j) in zip(self._sizes[:-1],self._sizes[1:])]
-        self._gradB = [np.zeros(b) for b in self._sizes[1:]]
+        self._numLayers = len(sizes)
+
+        if parsPath == "" :
+            self._weights = [np.random.randn(j,i)\
+                    for(i,j) in zip(self._sizes[:-1], self._sizes[1:])]
+            self._biases =[np.zeros(b) for b in self._sizes[1:]]
+        else:
+            self.loadModel(parsPath)
+
         self._layers = []
-        
+
         for size in self._sizes:
             layer = Layer(size)
             self._layers.append(layer)
 
-        self._labels = [] # a phone list
-######################
-    def initialize(self,parsPath=""):
-        if(parsPath ==""):
-            self._weights = [np.random.randn(j,i)\
-                    for(i,j) in zip(self._sizes[:-1], self._sizes[1:])]
-            self._biases =[np.zeros(b) for b in self._sizes[1:]]
-
-        else:
-            self.loadModel(parsPath)
     def setLabel(self,labels):
-        self._labels.extend(labels)
+        self._labels = labels
 ######################
     def train(self,batch):
         #print(len(batch))
+        self._gradW = [np.zeros((j, i)) for i, j in zip(self._sizes[:-1], self._sizes[1:])]
+        self._gradB = [np.zeros(b) for b in self._sizes[1:]]
         for data , dataId in zip (batch,(range(len(batch)))):
-            #print(data, dataId)
+            # print(data, dataId)
             self.forward(data[0])
             #dnn.errorFunc()
             self.backpro(dataId) #update gradW and gradB
@@ -57,9 +55,8 @@ class Network:
         #self._layers[0]._z = inData #not necessary
         self._layers[0]._a = inData
 
-        for b,w,i in zip(self._biases,self._weights, \
-                         range(len(self._biases))):
-            self._layers[i+1]._z = TMVdot(w,self._layers[i]._a)+b
+        for i in range(len(self._biases)):
+            self._layers[i+1]._z = TMVdot(self._weights[i], self._layers[i]._a) + self._biases[i]
             self._layers[i+1]._a = self.activate(self._layers[i+1]._z)
         #dot can used on matrix product
         return self._layers[-1]._a
@@ -97,10 +94,6 @@ class Network:
             self._weights[i] = np.subtract(self._weights[i], self._gradW[i] * eta / batch_len)
             self._biases[i] = np.subtract(self._biases[i], self._gradB[i] * eta / batch_len)
             # print("w(after) = {0}\nb(after) = {1}\n".format(self._gradW, self._gradB))
-            self._gradW[i] = np.zeros(self._gradW[i].shape) 
-            self._gradB[i] = np.zeros(self._gradB[i].__len__()) 
-            
-
 
     def predict(self,inData):
         conseq = self.forward(inData)
@@ -113,12 +106,13 @@ class Network:
         f = open(parsPath, "r")
         import json
         self._sizes = json.loads(f.readline())
-        self._gradW = []
-        self._gradB = []
+        self._numLayers = len(self._sizes)
+        self._weights = []
+        self._biases = []
         for tmp in json.loads(f.readline()):
             self._weights.append(np.asarray(tmp))
         for tmp in json.loads(f.readline()):
-            self._append(np.asarray(tmp))
+            self._biases.append(np.asarray(tmp))
 
 
     def saveModel(self, savePath):

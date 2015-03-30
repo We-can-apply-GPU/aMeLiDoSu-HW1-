@@ -10,8 +10,8 @@ import theano
 import theano.tensor as T
 
 
-def activate(x):  #x is a vector
-    return sigmoidVec(x)
+#def activate(x):  #x is a vector
+    #return sigmoidVec(x)
 
 #different activate functions
 def sigmoid(x):
