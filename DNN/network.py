@@ -42,14 +42,14 @@ class Network:
     def setLabel(self,labels):
         self._labels.extend(labels)
 ######################
+    def subtrain(self,tup):
+        self.forward(tup[0][0])
+        self.backpro(tup[1]) #update gradW and gradB
+            #dnn.errorFunc()
     def train(self,batch):
         #print(len(batch))
-        pool = Pool(processes = cpu_count() )
-        pool.map(subtrain,zip(batch,(range(len(batch)))):
-    def subtrain(self,data,dataId):
-            self.forward(data[0])
-            #dnn.errorFunc()
-            self.backpro(dataId) #update gradW and gradB
+        pool = Pool(processes = 5 )
+        pool.map(self.subtrain,zip(batch,(range(len(batch)))))
         self.update(0.01,batch.__len__())
 ###################
     def forward(self,inData):
