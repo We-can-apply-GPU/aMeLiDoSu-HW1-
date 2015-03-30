@@ -20,14 +20,14 @@ def errFuncPrime(ls,lb):
         mapdic[tmp[0]] = idx
         idx += 1
     zv = [0]*48
-    zv[mapdic[lb[0]]] = 1
+    zv[mapdic[lb]] = 1
     r += (2*(np.asarray(ls)-np.asarray(zv)))
     return r # maybe need to be divided by length
 def errSquare(ls):
     r = 0.0
     for i in ls:
         r += np.sum((i[0]-i[1])**2)
-    return r/ls.__len__()
+    return r 
 
 #not completed
 def f48t39_2(vec):
