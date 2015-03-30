@@ -43,6 +43,7 @@ class Network:
     def train(self,batch):
         #print(len(batch))
         for data , dataId in zip (batch,(range(len(batch)))):
+            #print(data, dataId)
             self.forward(data[0])
             #dnn.errorFunc()
             self.backpro(dataId) #update gradW and gradB
@@ -91,10 +92,11 @@ class Network:
 
 ######################
     def update(self,eta,batch_len):
-        for w,b,i in zip(self._weights,self._biases,
-                range(len(self._layers)-1)):
-            w = np.subtract(w,self._gradW[i]* eta / batch_len)
-            b = np.subtract(b,self._gradB[i]* eta / batch_len)
+        for i in range(len(self._layers)-1):
+            # print("w(before) = {0}\nb(before) = {1}\n".format(self._gradW, self._gradB))
+            self._weights[i] = np.subtract(self._weights[i], self._gradW[i] * eta / batch_len)
+            self._biases[i] = np.subtract(self._biases[i], self._gradB[i] * eta / batch_len)
+            # print("w(after) = {0}\nb(after) = {1}\n".format(self._gradW, self._gradB))
             self._gradW[i] = np.zeros(self._gradW[i].shape) 
             self._gradB[i] = np.zeros(self._gradB[i].__len__()) 
             
@@ -114,9 +116,9 @@ class Network:
         self._gradW = []
         self._gradB = []
         for tmp in json.loads(f.readline()):
-            self._gradW.append(np.asarray(tmp))
+            self._weights.append(np.asarray(tmp))
         for tmp in json.loads(f.readline()):
-            self._gradB.append(np.asarray(tmp))
+            self._append(np.asarray(tmp))
 
 
     def saveModel(self, savePath):
