@@ -45,7 +45,7 @@ class Network:
             self.forward(data[0])
             #dnn.errorFunc()
             self.backpro(dataId) #update gradW and gradB
-        self.update(0.01,batch.__len__())
+        self.update(0.0001, batch.__len__())
 ###################
     def forward(self,inData):
         #z is input  vector of neuron layer
