@@ -17,6 +17,17 @@ def arkIn(ark):
     data.close()
     return ans 
 
+def arkIn(ark):
+    ans = []
+    data = open(ark)
+    for line in data:
+        s = line.rstrip().split(" ")
+        for i in range(1, len(s)):
+            s[i] = float(s[i])
+        ans.append(s)
+    data.close()
+    return ans 
+
 def infile(ark, lab):
     dataset=[]
     dic = {}

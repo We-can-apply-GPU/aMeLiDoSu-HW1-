@@ -32,8 +32,8 @@ class Network:
         for size in self._sizes:
             layer = Layer(size,batchSize)
             self._layers.append(layer)
-        #self._prevGradW = [np.zeros(w.shape) for w in self._weights]
-        #self._prevGradB = [np.zeros(b,batchSize) for b in self._sizes[1:]]
+        self._prevGradW = [np.zeros(w.shape) for w in self._weights]
+        self._prevGradB = [np.zeros(b,batchSize) for b in self._sizes[1:]]
 
     def setLabel(self,labels):
         self._labels = labels

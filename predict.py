@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #!/usr/bin/python3
 """
 File: predict.py
