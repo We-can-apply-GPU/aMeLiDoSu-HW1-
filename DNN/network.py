@@ -4,6 +4,7 @@
 File: network.py
 Description: define the whole dnn,and learning alg 
 """
+from multiprocessing import Pool,cpu_count
 import numpy as np
 from .calculation import *
 from .errorFunc import *
@@ -43,7 +44,9 @@ class Network:
 ######################
     def train(self,batch):
         #print(len(batch))
-        for data , dataId in zip (batch,(range(len(batch)))):
+        pool = Pool(processes = cpu_count() )
+        pool.map(subtrain,zip(batch,(range(len(batch)))):
+    def subtrain(self,data,dataId):
             self.forward(data[0])
             #dnn.errorFunc()
             self.backpro(dataId) #update gradW and gradB
