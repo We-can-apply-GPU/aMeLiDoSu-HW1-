@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 # -*- coding: utf-8 -*-
 """
 File: train.py
@@ -14,8 +14,8 @@ import util
 
 #Predefined const
 sizes = [39,128,48]
-EPOCH_MAX = 50
-BATCH_SIZE = 10
+EPOCH_MAX = 5
+BATCH_SIZE = 100
 
 def main():
     dnn = Network()
@@ -29,13 +29,13 @@ def main():
 
     #training stage
     for i in range(EPOCH_MAX):
-        print("{0}/{1}".format(i+1, EPOCH_MAX))
+        #print("{0}/{1}".format(i+1, EPOCH_MAX))
         #print(len(batchs))
         for batch in batchs:
             labels=[batch[i][1] for i in range(BATCH_SIZE)]
+            #print(labels)
             dnn.setLabel(labels)
             dnn.train(batch)
-        #dnn.reportErrorrate()
 
     if len(sys.argv) > 2:
         modelName = "model/" + str(sys.argv[2])
@@ -50,7 +50,7 @@ def main():
     cnt = 0
     for row in dataset:
         max_index = util.chooseMax(dnn.forward(row[0]))
-        print(trans[max_index][1], row[1])
+        #print(trans[max_index][1], row[1])
         if trans[max_index][1] == row[1]:
             cnt += 1
     print("{0}/{1} = {2}".format(cnt, len(dataset), float(cnt)/len(dataset)))

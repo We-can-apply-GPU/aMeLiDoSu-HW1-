@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 """
 File: predict.py
 Desctiption:
@@ -14,7 +14,7 @@ def main():
     dnn = Network()
     dnn.initialize(parsPath = "model/" + sys.argv[1])
     data = arkIn("data/mfcc/test.ark")
-    out = open("output/" + sys.argv[1], "w")
+    out = open("output/" + sys.argv[1] + ".csv", "w")
     trans = []
     util.loadMap(trans)
     cnt = 1

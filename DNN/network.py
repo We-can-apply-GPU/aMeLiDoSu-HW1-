@@ -41,7 +41,7 @@ class Network:
         self._gradW = [np.zeros((j, i)) for i, j in zip(self._sizes[:-1], self._sizes[1:])]
         self._gradB = [np.zeros(b) for b in self._sizes[1:]]
         for data , dataId in zip (batch,(range(len(batch)))):
-            # print(data, dataId)
+            #print(data, dataId)
             self.forward(data[0])
             #dnn.errorFunc()
             self.backpro(dataId) #update gradW and gradB
@@ -67,7 +67,7 @@ class Network:
         #to calculate partial C^r over partial layer input
         #then , multiplicate layer output with it ->gradient
         #and store gradient in _gradW and _gradB
-       
+        #print(dataId) 
         aPl = self.activatePrime(self._layers[-1]._z)
         CrP = errFuncPrime(self._layers[-1]._a,self._labels[dataId])
         delta = aPl* CrP 
