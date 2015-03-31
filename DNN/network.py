@@ -32,12 +32,15 @@ class Network:
         for size in self._sizes:
             layer = Layer(size)
             self._layers.append(layer)
+        self._prevGradW = [np.zeros((j, i)) for i, j in zip(self._sizes[:-1], self._sizes[1:])]
+        #self._prevGradB = [np.zeros(b) for b in self._sizes[1:]]
 
     def setLabel(self,labels):
         self._labels = labels
 ######################
     def train(self,batch):
         #print(len(batch))
+        #for momentum usage
         self._gradW = [np.zeros((j, i)) for i, j in zip(self._sizes[:-1], self._sizes[1:])]
         self._gradB = [np.zeros(b) for b in self._sizes[1:]]
         for data , dataId in zip (batch,(range(len(batch)))):
@@ -45,7 +48,7 @@ class Network:
             self.forward(data[0])
             #dnn.errorFunc()
             self.backpro(dataId) #update gradW and gradB
-        self.update(0.0001, batch.__len__())
+        self.update(0.0001,0.9, batch.__len__())
 ###################
     def forward(self,inData):
         #z is input  vector of neuron layer
@@ -88,18 +91,19 @@ class Network:
             self._gradB[-l]+= delta 
 
 ######################
-    def update(self,eta,batch_len):
+    def update(self,eta,momentum,batch_len):
+        
+        #self._prevGradW = momentum * self._prevGradW 
+        for i in range(len(self._gradW)):
+            self._gradW[i] = np.add(self._gradW[i],momentum*self._prevGradW[i])
         for i in range(len(self._layers)-1):
-            # print("w(before) = {0}\nb(before) = {1}\n".format(self._gradW, self._gradB))
             self._weights[i] = np.subtract(self._weights[i], self._gradW[i] * eta / batch_len)
             self._biases[i] = np.subtract(self._biases[i], self._gradB[i] * eta / batch_len)
-            # print("w(after) = {0}\nb(after) = {1}\n".format(self._gradW, self._gradB))
-
-    def predict(self,inData):
-        conseq = self.forward(inData)
-
-        #Mapping to 39 phome
-        pass
+        for i in range(len(self._layers)-1):
+            self._weights[i] = np.subtract(self._weights[i], self._gradW[i] * eta / batch_len)
+            self._biases[i] = np.subtract(self._biases[i], self._gradB[i] * eta / batch_len)
+            self._prevGradW = self._gradW
+            #self._prevGradB = self._gradB
 
 
     def loadModel(self,parsPath):
