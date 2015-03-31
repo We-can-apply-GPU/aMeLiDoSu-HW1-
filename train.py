@@ -54,7 +54,7 @@ def main():
         if trans[max_index][1] == row[1]:
             cnt += 1
     print("{0}/{1} = {2}".format(cnt, len(dataset), float(cnt)/len(dataset)))
-    out.write("{0}/{1} = {2}".format(cnt, len(dataset), float(cnt)/len(dataset)))
+    out.write("{2}({1})".format(cnt, len(dataset), float(cnt)/len(dataset)))
 
 if __name__ == "__main__":
     main()
