@@ -27,15 +27,14 @@ def sigmoidPrime(x):
 
 
 ##Theano section
-vec1 = T.vector('vec1')
-vec2 = T.vector('vec2')
-matrix = T.matrix("matrix")
+#vec1 = T.vector(name='vec1')
+#vec2 = T.vector(name='vec2')
+matrix = T.matrix(name="matrix")
 
-Tdot = theano.function([vec1,vec2], T.dot(vec1, vec2), allow_input_downcast = True)
-TMVdot = theano.function([matrix,vec2], T.dot(matrix, vec2), allow_input_downcast = True)
-Touter = theano.function([vec1,vec2], T.outer(vec1, vec2), allow_input_downcast = True)
-sigmoidVec = theano.function([vec1], sigmoid(vec1), allow_input_downcast = True)
-sigmoidPrimeVec = theano.function([vec1],sigmoidPrime(vec1), allow_input_downcast = True)
+Tdot = theano.function([matrix,matirx], T.dot(matirx, matrix), name='Tdot', allow_input_downcast = True)
+Touter = theano.function([vec1,vec2], T.outer(matrix, matrix), name='Touter', allow_input_downcast = True)
+sigmoidVec = theano.function([vec1],sigmoid(vec1),name="sigmoidVec", allow_input_downcast = True)
+sigmoidPrimeVec = theano.function([vec1],sigmoidPrime(vec1),name="sigmoidPrimeVec", allow_input_downcast = True)
 
 if __name__ == '__main__':
     print(sigmoidVec([0,10,-100]))
