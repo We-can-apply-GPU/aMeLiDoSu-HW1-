@@ -8,7 +8,27 @@ import numpy as np
 import os
 def errFunc(ls):
     return errSquare(ls)
-def errFuncPrime(ls,lb):
+def errFuncPrime(Mart,lbs):
+    mapdic = {}
+    idx = 0
+    rs=[]
+    m = open("data/phones/48_39.map")
+    for s in m:
+        tmp = s.rstrip().split("\t")
+        mapdic[tmp[0]] = idx
+        idx += 1
+    for ls,lb in zip(Mart,lbs):
+        r = [0]*48
+        r = np.asarray(r)
+        zv = [0]*48
+        zv[mapdic[lb]] = 1
+        ls = np.asarray(ls)
+        lsc = np.asarray([1]*48)- ls
+        r += (ls-np.asarray(zv))/ls
+        r = r/lsc
+        rs.append(r)
+    return np.array(rs) # maybe need to be divided by length
+def errFuncPrimeSingle(ls,lb):
     r = [0]*48
     r = np.asarray(r)
     mapdic = {}
@@ -70,7 +90,7 @@ if __name__== "__main__":
     a[5]=0.5
     b[1]=0.5
     c[0]=0.5
-    print(errFuncPrime(a,"aa"))
+    print(errFuncPrime([a,b],["aa","aa"]))
    
 #The errorFunc will receive one argument, a list,
 #and compare it with the valuse set in labels(need mapping)
