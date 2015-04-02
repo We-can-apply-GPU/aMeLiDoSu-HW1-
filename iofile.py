@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-File: infile.py
+File: iofile.py
 Description: helper function : loadData and create minibatch
 """
 import numpy as np
@@ -35,7 +35,7 @@ def infile(ark, lab):
     labl = open(lab)
     for line in data:
         s = line.rstrip().split(" ")
-        dic[s[0]] = np.array([float(i) for i in s[1:]])
+        dic[s[0]] = s[1:]
     for line in labl:
         s = line.rstrip().split(",")
         if s[0] in dic:  #just to handle error input

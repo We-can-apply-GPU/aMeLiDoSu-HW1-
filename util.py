@@ -1,8 +1,9 @@
 <<<<<<< HEAD
 import random
+import numpy as np
 from math import ceil
 
-def loadMap(trans):
+def loadMapList(trans):
     data = open("DNN/48_39.map")
     for line in data:
         s = line.rstrip().split("\t")
@@ -15,19 +16,35 @@ def chooseMax(xxx):
             max_index = i
     return max_index
 
-def miniBatch(size, dataset):
+def genBatchs(size, dataset):
     #size define the size per batch
-    
-    random.seed()
-    random.shuffle(dataset)
-    batchs = []
+    batchs = [[],[]]
+    trainData = []
+    trainLabel = []
+    cnt = 0
 
-    numBatchs = ceil(len(dataset) / size)
+    trans = []
+    loadMapList(trans)
 
-    for cnt in range(numBatchs - 1):
-        batch = dataset[size*cnt:size*(cnt+1)]
-        batchs.append(batch)
+    for data in dataset:
+        tmp = []
+        for i in range(39):
+            if trans[i][0] == data[1]:
+                tmp.append(1)
+            else:
+                tmp.append(0)
+        trainData.append(data[0])
+        trainLabel.append(tmp)
+        cnt += 1
+        if cnt == size:
+            batchs[0].append(trainData)
+            batchs[1].append(trainLabel)
+            trainData = []
+            trainLabel = []
+            cnt = 0
 
-    batchs.append(dataset[size*(numBatchs-1):])
-    
+    if cnt != 0:
+        batchs[0].append(trainData)
+        batchs[1].append(trainLabel)
+
     return batchs
