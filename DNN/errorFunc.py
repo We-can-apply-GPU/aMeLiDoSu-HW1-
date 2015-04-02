@@ -20,8 +20,10 @@ def errFuncPrime(ls,lb):
         idx += 1
     zv = [0]*48
     zv[mapdic[lb]] = 1
-    r += (2*(np.asarray(ls)-np.asarray(zv)))
-    return r # maybe need to be divided by length
+    ls = np.asarray(ls)
+    lsc = np.asarray([1]*48)- ls
+    r += (ls-np.asarray(zv))/ls
+    return r/lsc # maybe need to be divided by length
 def errSquare(ls):
     r = 0.0
     for i in ls:
@@ -62,13 +64,13 @@ def f48t39_1(vec):
         ls48.append(tmp[0]) 
     return mapdic[ls48[np.argmax(vec)]]
 if __name__== "__main__":
-    c = [0]*48
-    b = [0]*48
-    a = [0]*48
-    a[5]=1
-    b[1]=1
-    c[0]=1
-    print(errFuncPrime([a,b,c],["aa","aa","aa"]))
+    c = [0.1]*48
+    b = [0.1]*48
+    a = [0.1]*48
+    a[5]=0.5
+    b[1]=0.5
+    c[0]=0.5
+    print(errFuncPrime(a,"aa"))
    
 #The errorFunc will receive one argument, a list,
 #and compare it with the valuse set in labels(need mapping)
