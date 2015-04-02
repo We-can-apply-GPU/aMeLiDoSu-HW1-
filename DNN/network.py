@@ -10,86 +10,84 @@ from .errorFunc import *
 #from util.calculation import *
 import theano.tensor as T
 class Layer:
-    def __init__(self,numNeurons):
-        self._z = np.zeros((numNeurons,1))
-        self._a = np.zeros((numNeurons,1))
+    def __init__(self,numNeurons,batchSize):
+        self._z = np.zeros((numNeurons,batchSize),1)) 
+        self._a = np.zeros((numNeurons,batchSize),1))
 
 class Network:
 
-    def initialize(self, parsPath = "", sizes = []):
+    def initialize(self, batchSize,parsPath = "", sizes = []):
         self._sizes = sizes
         self._numLayers = len(sizes)
 
         if parsPath == "" :
             self._weights = [np.random.randn(j,i)\
                     for(i,j) in zip(self._sizes[:-1], self._sizes[1:])]
-            self._biases =[np.zeros(b) for b in self._sizes[1:]]
+            self._biases =[np.zeros(b,batchSize) for b in self._sizes[1:]]
         else:
             self.loadModel(parsPath)
 
         self._layers = []
 
         for size in self._sizes:
-            layer = Layer(size)
+            layer = Layer(size,batchSize)
             self._layers.append(layer)
         self._prevGradW = [np.zeros((j, i)) for i, j in zip(self._sizes[:-1], self._sizes[1:])]
-        #self._prevGradB = [np.zeros(b) for b in self._sizes[1:]]
+        self._prevGradB = [np.zeros(b,batchSize) for b in self._sizes[1:]]
 
     def setLabel(self,labels):
         self._labels = labels
 ######################
-    def train(self,batch):
+    def train(self,batch,batchSize,batchId):
         #print(len(batch))
         #for momentum usage
         self._gradW = [np.zeros((j, i)) for i, j in zip(self._sizes[:-1], self._sizes[1:])]
-        self._gradB = [np.zeros(b) for b in self._sizes[1:]]
-        for data , dataId in zip (batch,(range(len(batch)))):
-            #print(data, dataId)
-            self.forward(data[0])
-            #dnn.errorFunc()
-            self.backpro(dataId) #update gradW and gradB
+        self._gradB = [np.zeros(b,batchSize) for b in self._sizes[1:]]
+        
+        self.forward(batch)
+        self.backpro(batchId)
         self.update(0.0001,0.9, batch.__len__())
+
 ###################
     def forward(self,inData):
-        #z is input  vector of neuron layer
-        #a is output vector of neuron layer,a=activate(z)
-
-        #inData must be a np.array
-        #self._layers[0]._z = inData #not necessary
+        #z is input  matrix of neuron layer
+        #a is output matrix of neuron layer,a=activate(z)
+        
+        #inData must be a np.array(39 * BATCH_SIZE)
         self._layers[0]._a = inData
 
         for i in range(len(self._biases)):
-            self._layers[i+1]._z = TMVdot(self._weights[i], self._layers[i]._a) + self._biases[i]
+            self._layers[i+1]._z = Tdot(self._weights[i], self._layers[i]._a) + self._biases[i]
             self._layers[i+1]._a = self.activate(self._layers[i+1]._z)
-        #dot can used on matrix product
         return self._layers[-1]._a
 #############################
 
-    def backpro(self,dataId):
+    def backpro(self,batchId):
         #This function will use backpropograte
         #to calculate partial C^r over partial layer input
         #then , multiplicate layer output with it ->gradient
         #and store gradient in _gradW and _gradB
         #print(dataId) 
         aPl = self.activatePrime(self._layers[-1]._z)
-        CrP = errFuncPrime(self._layers[-1]._a,self._labels[dataId])
+        #t1 = time.clock()
+        CrP = errFuncPrime(self._layers[-1]._a,self._labels[batchId])
+        #print(time.clock() - t1)
         delta = aPl* CrP 
         #delta^{L}
         
-        #delta is N_L   dim
-        #   _a is N_{L-1} dim
+        #delta is N_L*BATCHSIZE 
+        #   _a is N_{L-1}*BATCHSIZE 
         #the weight matrix is N_L x N_{L-1}
         #outer(a,b) = a b^T
-        
+        #t1 = time.clock()  
         self._gradW[-1] += Touter(delta,self._layers[-2]._a)
         self._gradB[-1] += delta  #delta * 1<-- partial z over b
         
         for l in range(2,self._numLayers):
             delta = self.activatePrime(self._layers[-l]._z)*  \
-            TMVdot(np.transpose(self._weights[-l+1]),delta)
+            Tdot(np.transpose(self._weights[-l+1]),delta)
             self._gradW[-l]+=Touter(delta,self._layers[-l-1]._a)
             self._gradB[-l]+= delta 
-
 ######################
     def update(self,eta,momentum,batch_len):
         
@@ -103,7 +101,7 @@ class Network:
             self._weights[i] = np.subtract(self._weights[i], self._gradW[i] * eta / batch_len)
             self._biases[i] = np.subtract(self._biases[i], self._gradB[i] * eta / batch_len)
             self._prevGradW = self._gradW
-            #self._prevGradB = self._gradB
+            self._prevGradB = self._gradB
 
 
     def loadModel(self,parsPath):

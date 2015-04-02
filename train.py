@@ -7,7 +7,6 @@ Description:
 
 #import section
 import sys
-import time
 from DNN.network import *
 from DNN.iofile import *
 import util
@@ -16,26 +15,23 @@ import util
 sizes = [39,128,48]
 EPOCH_MAX = 5
 BATCH_SIZE = 100
-
+#t = time.clock()
 def main():
+    import time
     dnn = Network()
     if sys.argv[1] == "random":
-        dnn.initialize(sizes = sizes)
+        dnn.initialize(batchsize = BATCH_SIZE,sizes = sizes)
     else:
-        dnn.initialize(parsPath = "model/" + sys.argv[1])
+        dnn.initialize(batchsize = BATCH_SIZE,parsPath = "model/" + sys.argv[1])
 
     dataset = infile("data/mfcc/trainToy.ark", "data/label/trainToy.lab")
+    #labels set
     batchs = miniBatch(BATCH_SIZE, dataset)
 
     #training stage
     for i in range(EPOCH_MAX):
-        #print("{0}/{1}".format(i+1, EPOCH_MAX))
-        #print(len(batchs))
-        for batch in batchs:
-            labels=[batch[i][1] for i in range(BATCH_SIZE)]
-            #print(labels)
-            dnn.setLabel(labels)
-            dnn.train(batch)
+        for batchId in range(len(batchs)):
+            dnn.train(batchs[i],BATCH_SIZE,batchId)
 
     if len(sys.argv) > 2:
         modelName = "model/" + str(sys.argv[2])
