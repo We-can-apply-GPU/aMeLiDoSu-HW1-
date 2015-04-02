@@ -14,7 +14,7 @@ import util
 
 #Predefined const
 sizes = [39,128,48]
-EPOCH_MAX = 5
+EPOCH_MAX = 1
 BATCH_SIZE = 100
 
 def main():
@@ -25,15 +25,14 @@ def main():
         dnn.initialize(parsPath = "model/" + sys.argv[1])
 
     dataset = infile("data/mfcc/trainToy.ark", "data/label/trainToy.lab")
-    batchs = miniBatch(BATCH_SIZE, dataset)
+    batchs = util.miniBatch(BATCH_SIZE, dataset)
 
     #training stage
     for i in range(EPOCH_MAX):
         #print("{0}/{1}".format(i+1, EPOCH_MAX))
-        #print(len(batchs))
         for batch in batchs:
-            labels=[batch[i][1] for i in range(BATCH_SIZE)]
-            #print(labels)
+            print(len(batch))
+            labels=[batch[i][1] for i in range(len(batch))]
             dnn.setLabel(labels)
             dnn.train(batch)
 

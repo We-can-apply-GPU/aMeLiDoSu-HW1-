@@ -5,8 +5,6 @@ File: infile.py
 Description: helper function : loadData and create minibatch
 """
 import numpy as np
-import random
-from math import ceil
 
 def arkIn(ark):
     ans = []
@@ -37,33 +35,6 @@ def infile(ark, lab):
     #for i in range(len(dataset)):
         #print("{}:{}".format(i,dataset[i]))
     return dataset
-
-def miniBatch(size,dataset):
-    #size define the size per batch
-    
-    random.seed()
-    random.shuffle(dataset)
-    batchs = []
-
-    numBatchs = ceil(len(dataset) / size)
-    compBatch = size - (len(dataset)%size) #for last batch
-
-    for cnt in range(numBatchs):
-        batch = dataset[size*cnt:size*(cnt+1)]
-        batchs.append(batch)
-
-    if(compBatch != size): #last batch isn't full
-        for i in range(compBatch):
-            batchs[-1].extend(dataset[0:compBatch])
-    
-    #test section
-    #for i in range(len(batchs)):
-        ##print(len(batchs))
-    for batch in batchs:
-        labels=[batch[i][1] for i in range(len(batch))]
-        #for label in labels:
-            #print("{}".format(label))
-    return batchs
 
 if __name__ == "__main__":
     dataset = infile()

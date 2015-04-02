@@ -1,6 +1,7 @@
 data
 model
 output
+tmpModel
 __pycache__/
 *.pyc
 *.swp
