@@ -6,12 +6,14 @@ Description: evaluate the cost function
 """
 import numpy as np
 import os
-def errFunc(ls):
-    return errSquare(ls)
+def errFunc(Mart,lbs):
+    return errCross(Mart,lbs)
+    # return errSquare(Mart,lbs)
 def errFuncPrime(Mart,lbs):
     one = np.ones(Mart.shape)
-    rs = (Mart-lbs)/Mart
-    return rs/(one-Mart)# maybe need to be divided by length
+    rs = (Mart-lbs)
+    div = (one-Mart)*Mart+(one*1e-100)
+    return rs/div
 def errFuncPrimeSingle(ls,lb):
     r = [0]*48
     r = np.asarray(r)
@@ -28,12 +30,13 @@ def errFuncPrimeSingle(ls,lb):
     lsc = np.asarray([1]*48)- ls
     r += (ls-np.asarray(zv))/ls
     return r/lsc # maybe need to be divided by length
-def errSquare(ls):
-    r = 0.0
-    for i in ls:
-        r += np.sum((i[0]-i[1])**2)
-    return r 
-
+def errSquare(Mart,lbs):
+    r += np.sum((Marts,lbs)**2)
+    return r/Mart.shape[1]
+def errCross(Mart,lbs):
+    one = np.ones(Mart.shape)
+    err = (-1)*(np.log(one-Mart)*(one-lbs)+lbs*np.log(Mart))
+    return np.average(err)
 #not completed
 def f48t39_2(vec):
    ### 
@@ -71,10 +74,9 @@ if __name__== "__main__":
     c = [0.1]*48
     b = [0.1]*48
     a = [0.1]*48
-    a[5]=0.5
-    b[1]=0.5
-    c[0]=0.5
-    print(errFuncPrime([a,b],["aa","aa"]))
+    a[0] = 0.5
+    b[2] = 0.3
+    print(errFuncPrime(np.array([a,b]),np.array([b,a])))
    
 #The errorFunc will receive one argument, a list,
 #and compare it with the valuse set in labels(need mapping)
