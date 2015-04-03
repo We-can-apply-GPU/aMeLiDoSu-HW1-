@@ -17,12 +17,12 @@ class Layer:
 class Network:
 
     def initialize(self, batchSize,parsPath = "", sizes = []):
+
         self._sizes = sizes
         self._numLayers = len(sizes)
 
         if parsPath == "" :
-            self._weights = [np.random.randn(j,i)\
-                    for(i,j) in zip(self._sizes[:-1], self._sizes[1:])]
+            self._weights = [np.random.randn(j,i) for(i,j) in zip(self._sizes[:-1], self._sizes[1:])]
             self._biases =[np.zeros(b) for b in self._sizes[1:]]
         else:
             self.loadModel(parsPath)
@@ -45,7 +45,7 @@ class Network:
         
         self.forward(datas)
         self.backpro(labels)
-        self.update(0.0001,0.9,datas.shape[1])
+        self.update(0.001, 0.9, datas.shape[1])
 
 ###################
     def forward(self,inData):
