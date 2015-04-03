@@ -12,7 +12,7 @@ import util
 
 def main():
     dnn = Network()
-    dnn.initialize(parsPath = "model/" + sys.argv[1])
+    dnn.initialize(1,parsPath = "model/" + sys.argv[1]) # batchsize is 1
     data = arkIn("data/mfcc/test.ark")
     out = open("output/" + sys.argv[1] + ".csv", "w")
     trans = []
