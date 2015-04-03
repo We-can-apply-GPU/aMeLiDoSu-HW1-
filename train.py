@@ -15,7 +15,7 @@ import random
 
 #Predefined const
 sizes = [39,128,48]
-EPOCH_MAX = 1
+EPOCH_MAX = 1000
 BATCH_SIZE = 100
 
 def main():
@@ -29,40 +29,33 @@ def main():
     random.seed()
     random.shuffle(dataset)
     [trainData, trainLabel] = util.genBatchs(BATCH_SIZE, dataset)
-    lenBatch = len(trainData)
-    
-    for z in range(EPOCH_MAX):
-        for i in range(lenBatch):
-            print("{0}/{1}".format(i, lenBatch))
-            dnn.train(np.transpose(np.array(trainData[i], dtype="float32")), np.transpose(np.array(trainLabel[i], dtype="float32")))
-
-    if len(sys.argv) > 2:
-        modelName = "model/" + str(sys.argv[2])
-    else:
-        import time
-        modelName = "model/" + str(time.time())
-    dnn.saveModel(modelName)
-    
-    out = open(modelName, "a")
-    trans = []
-    util.loadMapList(trans)
-    cnt = 0
     allDatas = []
     allLabels = []
     for batch in trainData:
         allDatas.extend(batch) 
     for batch in trainLabel:
         allLabels.extend(batch)
+    lenBatch = len(trainData)
+    print("training start")
+    for z in range(1, EPOCH_MAX+1):
+        for i in range(lenBatch):
+            dnn.train(np.transpose(np.array(trainData[i], dtype="float32")), np.transpose(np.array(trainLabel[i], dtype="float32")))
+        print("{0}/{1}".format(z, EPOCH_MAX))
 
-    allOutputs= dnn.forward(np.transpose(np.array(allDatas, dtype="float32")))
-    allOutputs = allOutputs.T
+        if z % 10 == 0:
+            trans = []
+            util.loadMapList(trans)
+            cnt = 0
 
-    for i in range(len(allOutputs)):
-        max_index = util.chooseMax(allOutputs[i])
-        if allLabels[i][max_index] == 1:
-            cnt += 1
-    print("{0}/{1} = {2}".format(cnt, len(allOutputs), float(cnt)/len(allOutputs)))
-    out.write("{2}({1})".format(cnt, len(allOutputs), float(cnt)/len(allOutputs)))
+            allOutputs= dnn.forward(np.transpose(np.array(allDatas, dtype="float32")))
+            allOutputs = allOutputs.T
+
+            for i in range(len(allOutputs)):
+                max_index = util.chooseMax(allOutputs[i])
+                if allLabels[i][max_index] == 1:
+                    cnt += 1
+            dnn.saveModel("tmpModel/" + "{2}x{1}".format(cnt, len(allOutputs), float(cnt)/len(allOutputs)))
+            print("{0}/{1} = {2}".format(cnt, len(allOutputs), float(cnt)/len(allOutputs)))
 
 if __name__ == "__main__":
     main()
