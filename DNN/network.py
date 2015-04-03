@@ -11,8 +11,8 @@ from .errorFunc import *
 import theano.tensor as T
 class Layer:
     def __init__(self,numNeurons,batchSize):
-        self._z = np.zeros((numNeurons,batchSize),1)) 
-        self._a = np.zeros((numNeurons,batchSize),1))
+        self._z = np.zeros((numNeurons,batchSize)) 
+        self._a = np.zeros((numNeurons,batchSize))
 
 class Network:
 
@@ -23,7 +23,7 @@ class Network:
         if parsPath == "" :
             self._weights = [np.random.randn(j,i)\
                     for(i,j) in zip(self._sizes[:-1], self._sizes[1:])]
-            self._biases =[np.zeros(b,1) for b in self._sizes[1:]]
+            self._biases =[np.zeros(b) for b in self._sizes[1:]]
         else:
             self.loadModel(parsPath)
 
@@ -33,21 +33,19 @@ class Network:
             layer = Layer(size,batchSize)
             self._layers.append(layer)
         self._prevGradW = [np.zeros(w.shape) for w in self._weights]
-        self._prevGradB = [np.zeros(b,batchSize) for b in self._sizes[1:]]
+        self._prevGradB = [np.zeros(b) for b in self._sizes[1:]]
 
-    def setLabel(self,labels):
-        self._labels = labels
 ######################
-    def train(self,batch,batchSize,batchId):
+    def train(self,datas,labels):
         #print(len(batch))
         #for momentum usage
         self._gradW = [np.zeros(w.shape) for w in self._weights]
         self._gradB = [np.zeros(b.shape) for b in self._biases]
-        self._gradBs = [np.zeros(b,batchSize) for b in self._sizes[1:]]
+        self._gradBs = [np.zeros((b,datas.shape[1])) for b in self._sizes[1:]]
         
-        self.forward(batch)
-        self.backpro(batchId)
-        self.update(0.0001,0.9, batch.__len__())
+        self.forward(datas)
+        self.backpro(labels)
+        self.update(0.0001,0.9,datas.shape[1])
 
 ###################
     def forward(self,inData):
@@ -66,7 +64,7 @@ class Network:
         return self._layers[-1]._a
 #############################
 
-    def backpro(self,batchId):
+    def backpro(self,labels):
         #This function will use backpropograte
         #to calculate partial C^r over partial layer input
         #then , multiplicate layer output with it ->gradient
@@ -74,7 +72,7 @@ class Network:
         #print(dataId) 
         aPl = self.activatePrime(self._layers[-1]._z)
         #t1 = time.clock()
-        CrP = errFuncPrime(self._layers[-1]._a,self._labels[batchId])
+        CrP = errFuncPrime(self._layers[-1]._a,labels)
         #print(time.clock() - t1)
         delta = aPl* CrP 
         #delta^{L}
@@ -84,14 +82,14 @@ class Network:
         #the weight matrix is N_L x N_{L-1}
         #outer(a,b) = a b^T
         #t1 = time.clock()  
-        self._gradW[-1] = Touter(delta,self._layers[-2]._a) 
+        self._gradW[-1] = Tdot(delta,np.transpose(self._layers[-2]._a)) 
         #haven't been tested,the consequence is the sum of each deltaW
         self._gradBs[-1] = delta  #delta * 1<-- partial z over b
         
         for l in range(2,self._numLayers):
             delta = self.activatePrime(self._layers[-l]._z)*  \
             Tdot(np.transpose(self._weights[-l+1]),delta)
-            self._gradW[-l]=Touter(delta,self._layers[-l-1]._a)
+            self._gradW[-l]=Tdot(delta,np.transpose(self._layers[-l-1]._a))
             self._gradBs[-l]= delta 
 ######################
     def update(self,eta,momentum,batch_len):

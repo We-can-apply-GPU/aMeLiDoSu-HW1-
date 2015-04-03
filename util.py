@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import random
 import numpy as np
 from math import ceil
@@ -28,7 +27,7 @@ def genBatchs(size, dataset):
 
     for data in dataset:
         tmp = []
-        for i in range(39):
+        for i in range(48):
             if trans[i][0] == data[1]:
                 tmp.append(1)
             else:
@@ -44,6 +43,16 @@ def genBatchs(size, dataset):
             cnt = 0
 
     if cnt != 0:
+        for z in range(size - len(trainData)):
+            tmp = []
+            for i in range(48):
+                if trans[i][0] == data[1]:
+                    tmp.append(1)
+                else:
+                    tmp.append(0)
+            trainData.append(dataset[z][0])
+            trainLabel.append(tmp)
+
         batchs[0].append(trainData)
         batchs[1].append(trainLabel)
 
