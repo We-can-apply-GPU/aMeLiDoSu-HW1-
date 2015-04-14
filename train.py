@@ -7,55 +7,71 @@ Description:
 
 #import section
 import sys
-import time
 from DNN.network import *
 import util
-import iofile
 import random
+import theano
+import theano.tensor as T
 
-#Predefined const
-sizes = [39,128,48]
-EPOCH_MAX = 1000
+sizes = [39, 64, 64, 64, 48]
+EPOCH_MAX = 1000000
 BATCH_SIZE = 100
+lr = 0.01
+momentum = 0.9
+decay = 1
 
 def main():
-    dnn = Network()
+    w_init = []
+    b_init = []
     if sys.argv[1] == "random":
-        dnn.initialize(BATCH_SIZE,sizes = sizes)
+        for n_input, n_output in zip(sizes[:-1], sizes[1:]):
+            w_init.append(np.random.randn(n_output, n_input))
+            b_init.append(np.zeros(n_output))
     else:
-        dnn.initialize(BATCH_SIZE,parsPath = "model/" + sys.argv[1])
+        [w_init, b_init] = loadModel("model/" + sys.argv[1])
+    dnn = Network(w_init, b_init)
+    print("Compiling theano")
+    inputData = T.matrix("inputData")
+    targetData = T.matrix("outputData")
+    learning_rate = theano.shared(value=np.float32(lr))
+    cost = dnn.error(inputData, targetData)
+    train = theano.function([inputData, targetData], inputData, updates=dnn.update(cost, learning_rate, decay, momentum))
+    forward = theano.function([inputData], dnn.forward(inputData))
     
-    dataset = iofile.infile("data/mfcc/train.ark", "data/label/train.lab")
+    print("Reading data")
+    dataset = util.infile("data/mfcc/train.ark", "data/label/train.lab")
     random.seed()
     random.shuffle(dataset)
-    [trainData, trainLabel] = util.genBatchs(BATCH_SIZE, dataset)
-    allDatas = []
-    allLabels = []
-    for batch in trainData:
-        allDatas.extend(batch) 
-    for batch in trainLabel:
-        allLabels.extend(batch)
-    lenBatch = len(trainData)
-    print("training start")
+    print("Processing data")
+    [X, Y] = util.genBatchs(BATCH_SIZE, dataset)
+    print("Processing all data")
+    [allX, allY] = util.genBatchs(10000000, dataset)
+    allX = allX[0]
+    allY = allY[0]
+    print("training")
+
     for z in range(1, EPOCH_MAX+1):
-        for i in range(lenBatch):
-            dnn.train(np.transpose(np.array(trainData[i], dtype="float32")), np.transpose(np.array(trainLabel[i], dtype="float32")))
-        print("{0}/{1}".format(z, EPOCH_MAX))
-
+        tmp = 0
+        for x, y in zip(X, Y):
+            train(x.T, y.T)
         if z % 10 == 0:
-            trans = []
-            util.loadMapList(trans)
+            print(cost.eval({inputData: allX.T, targetData: allY.T}))
+            allOutput = forward(allX.T).T
             cnt = 0
-
-            allOutputs= dnn.forward(np.transpose(np.array(allDatas, dtype="float32")))
-            allOutputs = allOutputs.T
-
-            for i in range(len(allOutputs)):
-                max_index = util.chooseMax(allOutputs[i])
-                if allLabels[i][max_index] == 1:
+            for eachOutput, eachTarget in zip(allOutput, allY):
+                test = util.chooseMax(eachOutput)
+                if eachTarget[test] == 1:
                     cnt += 1
-            dnn.saveModel("tmpModel/" + "{2}x{1}".format(cnt, len(allOutputs), float(cnt)/len(allOutputs)))
-            print("{0}/{1} = {2}".format(cnt, len(allOutputs), float(cnt)/len(allOutputs)))
+            print("{0}/{1}".format(cnt, len(allX)))
+            w = []
+            b = []
+            for layer in dnn.layers:
+                w += [layer.w.get_value().tolist()]
+                b += [layer.b.get_value().tolist()]
+            saveModel("tmpModel/"+"{0}x{1}".format(cnt, len(allX)), w, b)
+
+        print("Epoch: {0}".format(z))
+        
 
 if __name__ == "__main__":
     main()

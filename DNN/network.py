@@ -7,139 +7,61 @@ Description: define the whole dnn,and learning alg
 import numpy as np
 from .calculation import *
 from .errorFunc import *
-#from util.calculation import *
+import theano
 import theano.tensor as T
+
 class Layer:
-    def __init__(self,numNeurons,batchSize):
-        self._z = np.zeros((numNeurons,batchSize)) 
-        self._a = np.zeros((numNeurons,batchSize))
+    def __init__(self, w_init, b_init):
+        self.w = theano.shared(value=w_init, borrow=True)
+        self.b = theano.shared(value=b_init.reshape(-1, 1).astype(theano.config.floatX), borrow=True, broadcastable=(False, True))
+        self.params = [self.w, self.b]
+
+    def output(self, x):
+        return 1.0 / ( 1 + T.exp(-(T.dot(self.w, x) + self.b)))
 
 class Network:
+    def __init__(self, w_init, b_init):
+        self.layers = []
+        for w, b in zip(w_init, b_init):
+            self.layers.append(Layer(w, b))
+        self.params = []
+        for layer in self.layers:
+            self.params += layer.params
 
-    def initialize(self, batchSize,parsPath = "", sizes = []):
+    def forward(self, x):
+        for layer in self.layers:
+            x = layer.output(x)
+        return x
 
-        self._sizes = sizes
-        self._numLayers = len(sizes)
+    def error(self, x, y):
+        x = self.forward(x)
+        return -T.sum(y * T.log(x) + (1 - y) * T.log(1 - x)) / x.shape[1]
 
-        if parsPath == "" :
-            self._weights = [np.random.randn(j,i) for(i,j) in zip(self._sizes[:-1], self._sizes[1:])]
-            self._biases =[np.zeros(b) for b in self._sizes[1:]]
-        else:
-            self.loadModel(parsPath)
-
-        self._layers = []
-
-        for size in self._sizes:
-            layer = Layer(size,batchSize)
-            self._layers.append(layer)
-        self._prevGradW = [np.zeros(w.shape) for w in self._weights]
-        self._prevGradB = [np.zeros(b) for b in self._sizes[1:]]
-
-######################
-    def train(self,datas,labels):
-        #print(len(batch))
-        #for momentum usage
-        self._gradW = [np.zeros(w.shape) for w in self._weights]
-        self._gradB = [np.zeros(b.shape) for b in self._biases]
-        self._gradBs = [np.zeros((b,datas.shape[1])) for b in self._sizes[1:]]
-        
-        self.forward(datas)
-        self.backpro(labels)
-        self.update(0.001, 0.9, datas.shape[1])
-
-###################
-    def forward(self,inData):
-        #z is input  matrix of neuron layer
-        #a is output matrix of neuron layer,a=activate(z)
-        
-        #inData must be a np.array(39 * BATCH_SIZE)
-        self._layers[0]._a = inData
-        
-        #trace layer to layer
-        for i in range(len(self._layers) - 1):
-            self._layers[i+1]._z = Tdot(self._weights[i], self._layers[i]._a) 
-            for column in self._layers[i+1]._z.T:
-                column += self._biases[i]
-            self._layers[i+1]._a = self.activate(self._layers[i+1]._z)
-        return self._layers[-1]._a
-#############################
-
-    def backpro(self,labels):
-        #This function will use backpropograte
-        #to calculate partial C^r over partial layer input
-        #then , multiplicate layer output with it ->gradient
-        #and store gradient in _gradW and _gradB
-        #print(dataId) 
-        aPl = self.activatePrime(self._layers[-1]._z)
-        #t1 = time.clock()
-        CrP = errFuncPrime(self._layers[-1]._a,labels)
-        #print(time.clock() - t1)
-        delta = aPl* CrP 
-        #delta^{L}
-        
-        #delta is N_L*BATCHSIZE 
-        #   _a is N_{L-1}*BATCHSIZE 
-        #the weight matrix is N_L x N_{L-1}
-        #outer(a,b) = a b^T
-        #t1 = time.clock()  
-        self._gradW[-1] = Tdot(delta,np.transpose(self._layers[-2]._a)) 
-        #haven't been tested,the consequence is the sum of each deltaW
-        self._gradBs[-1] = delta  #delta * 1<-- partial z over b
-        
-        for l in range(2,self._numLayers):
-            delta = self.activatePrime(self._layers[-l]._z)*  \
-            Tdot(np.transpose(self._weights[-l+1]),delta)
-            self._gradW[-l]=Tdot(delta,np.transpose(self._layers[-l-1]._a))
-            self._gradBs[-l]= delta 
-######################
-    def update(self,eta,momentum,batch_len):
-        
-        for i in range(len(self._layers) - 1):
-            self._gradW[i] = np.add(self._gradW[i],momentum*self._prevGradW[i])
-
-            for column in self._gradBs[i].T :
-                self._gradB[i] += column
-            
-            self._gradB[i] = np.add(self._gradB[i],momentum*self._prevGradB[i])
-
-        for i in range(len(self._layers)-1):
-            self._weights[i] = np.subtract(self._weights[i], self._gradW[i] * eta / batch_len)
-            self._biases[i] = np.subtract(self._biases[i],self._gradB[i] * eta / batch_len)
-
-            self._prevGradW = self._gradW
-            self._prevGradB = self._gradB
-
-
-    def loadModel(self,parsPath):
-        f = open(parsPath, "r")
-        import json
-        self._sizes = json.loads(f.readline())
-        self._numLayers = len(self._sizes)
-        self._weights = []
-        self._biases = []
-        for tmp in json.loads(f.readline()):
-            self._weights.append(np.asarray(tmp))
-        for tmp in json.loads(f.readline()):
-            self._biases.append(np.asarray(tmp))
-
-
-    def saveModel(self, savePath):
-        f = open(savePath, "w")
-
-        import json
-        f.write(json.dumps(self._sizes))
-        f.write("\n")
-        f.write(json.dumps([tmp.tolist() for tmp in self._weights]))
-        f.write("\n")
-        f.write(json.dumps([tmp.tolist() for tmp in self._biases]))
-        f.write("\n")
-        f.close()
-
-#different activate functions
-
-    def activate(self,x):  #x is a vector
-        return sigmoidVec(x)
-
-    def activatePrime(self,x):
-        return sigmoidPrimeVec(x)
+    def update(self, cost, learning_rate, decay, momentum):
+        updates = []
+        for param in self.params:
+            param_update = theano.shared(param.get_value()*0., broadcastable = param.broadcastable)
+            updates.append((param, param - learning_rate * param_update))
+            updates.append((param_update, momentum * param_update + (1 - momentum) * T.grad(cost, param)))
+        updates.append((learning_rate, learning_rate * decay))
+        return updates
     
+def loadModel(parsPath):
+    f = open(parsPath, "r")
+    import json
+    w_init = []
+    b_init = []
+    for tmp in json.loads(f.readline()):
+        w_init += [np.asarray(tmp, dtype=theano.config.floatX)]
+    for tmp in json.loads(f.readline()):
+        b_init += [np.asarray(tmp, dtype=theano.config.floatX)]
+    f.close()
+    return [w_init, b_init]
+
+def saveModel(savePath, w, b):
+    f = open(savePath, "w")
+    import json
+    f.write(json.dumps(w))
+    f.write("\n")
+    f.write(json.dumps(b))
+    f.write("\n")
