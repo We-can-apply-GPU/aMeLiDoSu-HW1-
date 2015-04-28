@@ -25,7 +25,7 @@ def main():
     else:
         dnn.initialize(BATCH_SIZE,parsPath = "model/" + sys.argv[1])
     
-    dataset = iofile.infile("data/mfcc/train.ark", "data/label/train.lab")
+    dataset = iofile.infile("data/mfcc/trainToy.ark", "data/label/trainToy.lab")
     random.seed()
     random.shuffle(dataset)
     [trainData, trainLabel] = util.genBatchs(BATCH_SIZE, dataset)

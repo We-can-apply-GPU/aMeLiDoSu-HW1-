@@ -10,10 +10,10 @@ def errFunc(Mart,lbs):
     return errCross(Mart,lbs)
     # return errSquare(Mart,lbs)
 def errFuncPrime(Mart,lbs):
-    one = np.ones(Mart.shape)
+    #one = np.ones(Mart.shape)
     rs = (Mart-lbs)
-    div = (one-Mart)*Mart+(one*1e-100)
-    return rs/div
+    #div = (one-Mart)*Mart+(one*1e-100)
+    return rs
 def errFuncPrimeSingle(ls,lb):
     r = [0]*48
     r = np.asarray(r)
@@ -34,9 +34,15 @@ def errSquare(Mart,lbs):
     r += np.sum((Marts,lbs)**2)
     return r/Mart.shape[1]
 def errCross(Mart,lbs):
-    one = np.ones(Mart.shape)
-    err = (-1)*(np.log(one-Mart)*(one-lbs)+lbs*np.log(Mart))
-    return np.average(err)
+    #only the diagonal is what we want
+    #the return vector is[-log(y_lab1) -log(y_lab2) ...]
+    lbsT = lbs.T
+    out = np.dot(Mart,lbsT)
+    return -1*(np.log(out.diagonal()))
+
+    #err = (-1)*(np.log(one-Mart)*(one-lbs)+lbs*np.log(Mart))
+    #return np.average(err)
+    
 #not completed
 def f48t39_2(vec):
    ### 

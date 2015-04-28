@@ -24,6 +24,7 @@ def sigmoidPrime(x):
 
 #sigmoidPrimeVec = np.vectorize(sigmoidPrime)
 
+def softMax(Mart)
 
 
 ##Theano section
