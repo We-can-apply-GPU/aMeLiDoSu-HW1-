@@ -20,7 +20,7 @@ class Network:
 
         self._sizes = sizes
         self._numLayers = len(sizes)
-
+        
         if parsPath == "" :
             self._weights = [np.random.randn(j,i) for(i,j) in zip(self._sizes[:-1], self._sizes[1:])]
             self._biases =[np.zeros(b) for b in self._sizes[1:]]
@@ -36,7 +36,7 @@ class Network:
 
         self._prevGradW = [np.zeros(w.shape) for w in self._weights]
         self._prevGradB = [np.zeros(b) for b in self._sizes[1:]]
-
+        self.loss = 0.0
 ######################
     def train(self,datas,labels):
         #print(len(batch))
@@ -79,6 +79,7 @@ class Network:
         aPl = self.activatePrime(self._layers[-1]._z)
         #t1 = time.clock()
         #CrP = errFuncPrime(self._layers[-1]._a,labels)
+        self.loss = np.sum(errFunc(self._softMaxLayer._a,labels))
         CrP = errFuncPrime(self._softMaxLayer._a,labels)
         #print(time.clock() - t1)
         delta = aPl* CrP 
@@ -144,7 +145,7 @@ class Network:
 
 #different activate functions
 
-    def activate(self,x):  x is a vector
+    def activate(self,x):  
         return sigmoidVec(x)
 
     def activatePrime(self,x):

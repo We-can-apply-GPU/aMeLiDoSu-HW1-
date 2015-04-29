@@ -56,6 +56,7 @@ def main():
                     cnt += 1
             dnn.saveModel("tmpModel/" + "{2}x{1}".format(cnt, len(allOutputs), float(cnt)/len(allOutputs)))
             print("{0}/{1} = {2}".format(cnt, len(allOutputs), float(cnt)/len(allOutputs)))
+            print("Loss is {}".format(dnn.loss))
 
 if __name__ == "__main__":
     main()

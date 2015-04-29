@@ -22,10 +22,15 @@ def sigmoid(x):
 def sigmoidPrime(x):
     return sigmoid(x) * (1 - sigmoid(x))
 
-#sigmoidPrimeVec = np.vectorize(sigmoidPrime)
+#sigmoidtPrimeVec = np.vectorize(sigmoidPrime)
 
-def softMax(Mart)
-
+def softMax(Mart):
+   #out = Mart
+   out = np.exp(Mart)
+   for column in out.T:
+       total = float(np.sum(column))
+       column /= total
+   return out
 
 ##Theano section
 #vec1 = T.vector(name='vec1')
@@ -39,5 +44,8 @@ sigmoidVec = theano.function([matrix1],sigmoid(matrix1),name="sigmoidVec", allow
 sigmoidPrimeVec = theano.function([matrix1],sigmoidPrime(matrix1),name="sigmoidPrimeVec", allow_input_downcast = True)
 
 if __name__ == '__main__':
-    print(sigmoidVec([0,10,-100]))
-    print(sigmoidPrimeVec([0,10,-100]))
+    #print(sigmoidVec([0,10,-100]))
+    #print(sigmoidPrimeVec([0,10,-100]))
+    print("SOFTMAX TEST")
+    a = (np.arange(1,10,1,dtype = np.float32).reshape((3,3)))
+    print(softMax(a))

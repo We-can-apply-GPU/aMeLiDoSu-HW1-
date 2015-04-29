@@ -37,9 +37,11 @@ def errCross(Mart,lbs):
     #only the diagonal is what we want
     #the return vector is[-log(y_lab1) -log(y_lab2) ...]
     lbsT = lbs.T
-    out = np.dot(Mart,lbsT)
+    out = np.dot(lbsT,Mart)
     return -1*(np.log(out.diagonal()))
+    #return out.diagonal() //test
 
+    #Previous version
     #err = (-1)*(np.log(one-Mart)*(one-lbs)+lbs*np.log(Mart))
     #return np.average(err)
     
@@ -83,6 +85,14 @@ if __name__== "__main__":
     a[0] = 0.5
     b[2] = 0.3
     print(errFuncPrime(np.array([a,b]),np.array([b,a])))
+    print("ERRFUNC TEST")
+    a = (np.arange(1,10,1)).reshape((3,3))
+    print(a)
+    lbs = np.zeros(a.shape)
+    lbs[0,1] = 1
+    lbs[1,2] = 1
+    lbs[2,0] = 1
+    print(errFunc(a,lbs))
    
 #The errorFunc will receive one argument, a list,
 #and compare it with the valuse set in labels(need mapping)
