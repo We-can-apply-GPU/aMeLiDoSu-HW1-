@@ -14,12 +14,14 @@ def main():
     dnn = Network()
     dnn.initialize(1,parsPath = "model/" + sys.argv[1]) # batchsize is 1
     data = arkIn("data/mfcc/test.ark")
-    out = open("output/" + sys.argv[1] + ".csv", "w")
+    out39 = open("output48/" + sys.argv[1] + ".csv", "w")
+    out48 = open("output39/" + sys.argv[1] + ".csv", "w")
 
     trans = []
     util.loadMapList(trans)
     cnt = 1
-    out.write("Id,Prediction\n")
+    out39.write("Id,Prediction\n")
+    out48.write("Id,Prediction\n")
     inputData = []
     for row in data:
         inputData.append(row[1:])
@@ -28,8 +30,8 @@ def main():
     
     for i in range(len(output)):
         maxIndex = util.chooseMax(output[i])
-        out.write("{0},{1}\n".format(data[i][0],trans[maxIndex][1]))
-
+        out39.write("{0},{1}\n".format(data[i][0],trans[maxIndex][1]))
+        out48.write("{0},{1}\n".format(data[i][0],trans[maxIndex][0]))
 
     #for row in data:
         #max_index = util.chooseMax(dnn.forward(row[1:]))
