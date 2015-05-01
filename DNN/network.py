@@ -42,11 +42,17 @@ class Network:
         self._gradW = [np.zeros(w.shape) for w in self._weights]
         self._gradB = [np.zeros(b.shape) for b in self._biases]
         self._gradBs = [np.zeros((b,datas.shape[1])) for b in self._sizes[1:]]
-        
+        datas = self.preprocess(datas)
+
         self.forward(datas)
         self.backpro(labels)
         self.update(0.001, 0.9, datas.shape[1])
-
+###################
+    def preprocess(self,datas)
+        datas = np.transpose(datas)
+        for i in range(datas.__len__()):
+            datas[i] = (datas[i]-np.mean(datas[i]))/np.std(datas[i])
+        return np.transpose(datas)
 ###################
     def forward(self,inData):
         #z is input  matrix of neuron layer
