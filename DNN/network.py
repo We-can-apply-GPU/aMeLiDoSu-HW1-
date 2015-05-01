@@ -20,7 +20,7 @@ class Network:
 
         self._sizes = sizes
         self._numLayers = len(sizes)
-
+        
         if parsPath == "" :
             self._weights = [np.random.randn(j,i) for(i,j) in zip(self._sizes[:-1], self._sizes[1:])]
             self._biases =[np.zeros(b) for b in self._sizes[1:]]
@@ -28,13 +28,15 @@ class Network:
             self.loadModel(parsPath)
 
         self._layers = []
-
         for size in self._sizes:
             layer = Layer(size,batchSize)
             self._layers.append(layer)
+
+        self._softMaxLayer = Layer(size,batchSize)
+
         self._prevGradW = [np.zeros(w.shape) for w in self._weights]
         self._prevGradB = [np.zeros(b) for b in self._sizes[1:]]
-
+        self.loss = 0.0
 ######################
     def train(self,datas,labels):
         #print(len(batch))
@@ -61,7 +63,11 @@ class Network:
             for column in self._layers[i+1]._z.T:
                 column += self._biases[i]
             self._layers[i+1]._a = self.activate(self._layers[i+1]._z)
-        return self._layers[-1]._a
+
+        self._softMaxLayer._z = self._layers[-1]._a
+        self._softMaxLayer._a = softMax(self._softMaxLayer._z)
+
+        return self._softMaxLayer._a
 #############################
 
     def backpro(self,labels):
@@ -69,10 +75,12 @@ class Network:
         #to calculate partial C^r over partial layer input
         #then , multiplicate layer output with it ->gradient
         #and store gradient in _gradW and _gradB
-        #print(dataId) 
+        #print(dataId)
         aPl = self.activatePrime(self._layers[-1]._z)
         #t1 = time.clock()
-        CrP = errFuncPrime(self._layers[-1]._a,labels)
+        #CrP = errFuncPrime(self._layers[-1]._a,labels)
+        self.loss = np.sum(errFunc(self._softMaxLayer._a,labels))
+        CrP = errFuncPrime(self._softMaxLayer._a,labels)
         #print(time.clock() - t1)
         delta = aPl* CrP 
         #delta^{L}
@@ -137,7 +145,7 @@ class Network:
 
 #different activate functions
 
-    def activate(self,x):  #x is a vector
+    def activate(self,x):  
         return sigmoidVec(x)
 
     def activatePrime(self,x):

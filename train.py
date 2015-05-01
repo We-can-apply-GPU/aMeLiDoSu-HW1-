@@ -25,7 +25,7 @@ def main():
     else:
         dnn.initialize(BATCH_SIZE,parsPath = "model/" + sys.argv[1])
     
-    dataset = iofile.infile("data/mfcc/train.ark", "data/label/train.lab")
+    dataset = iofile.infile("data/mfcc/trainToy.ark", "data/label/trainToy.lab")
     random.seed()
     random.shuffle(dataset)
     [trainData, trainLabel] = util.genBatchs(BATCH_SIZE, dataset)
@@ -56,6 +56,7 @@ def main():
                     cnt += 1
             dnn.saveModel("tmpModel/" + "{2}x{1}".format(cnt, len(allOutputs), float(cnt)/len(allOutputs)))
             print("{0}/{1} = {2}".format(cnt, len(allOutputs), float(cnt)/len(allOutputs)))
+            print("Loss is {}".format(dnn.loss))
 
 if __name__ == "__main__":
     main()
