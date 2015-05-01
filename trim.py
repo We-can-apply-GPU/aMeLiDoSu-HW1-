@@ -70,12 +70,3 @@ def segment():
 if __name__=="__main__":
     infile()
     segment()
-
-
-
-
-
-
-
-
-

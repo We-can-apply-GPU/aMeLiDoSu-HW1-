@@ -50,7 +50,7 @@ class Network:
         self.backpro(labels)
         self.update(0.001, 0.9, datas.shape[1])
 ###################
-    def preprocess(self,datas)
+    def preprocess(self,datas):
         datas = np.transpose(datas)
         for i in range(datas.__len__()):
             datas[i] = (datas[i]-np.mean(datas[i]))/np.std(datas[i])
